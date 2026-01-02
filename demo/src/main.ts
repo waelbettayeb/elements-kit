@@ -1,5 +1,5 @@
-import { signal } from "./signals";
-import { render, reactive } from "./core";
+import { signal } from "../../src/signals";
+import { render, reactive } from "../../src/core";
 
 const value = signal(0);
 
