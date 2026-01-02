@@ -1,12 +1,23 @@
 {
   "name": "webelements",
   "version": "1.0.0",
-  "description": "",
+  "description": "A lightweight reactive UI library that transforms native HTMLElements into reactive components with signals. Ideal for framework-agnostic applications and web components.",
   "main": "index.js",
   "scripts": {
     "demo": "pnpx vite ./demo"
   },
-  "keywords": [],
+  "keywords": [
+    "webcomponents",
+    "custom-elements",
+    "signals",
+    "reactivity",
+    "typescript",
+    "library",
+    "frontend",
+    "builder",
+    "html",
+    "web"
+  ],
   "author": "@waelbettayeb",
   "license": "MIT",
   "packageManager": "pnpm@10.26.2",
