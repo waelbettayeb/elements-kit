@@ -1,5 +1,5 @@
 import { computed, signal } from "./signals";
-type ReactiveValue<T> =
+export type ReactiveValue<T> =
   | T
   | ReturnType<typeof signal<T>>
   | ReturnType<typeof computed<T>>;
@@ -61,12 +61,12 @@ interface Obj {
   set value(v: string);
 }
 
-const reactiveObject: ReactiveBuilder<HTMLElement> = null!;
-reactiveObject
-  .id("my-id")
-  .style.backgroundColor("red")
-  .style.padding("10px")
-  .style("border: 1px solid black;") // should accept setting style as string not CSSObject
-  .accessKeyLabel("label"); // READONLY should error
+// const reactiveObject: ReactiveBuilder<HTMLElement> = null!;
+// reactiveObject
+//   .id("my-id")
+//   .style.backgroundColor("red")
+//   .style.padding("10px")
+//   .style("border: 1px solid black;") // should accept setting style as string not CSSObject
+//   .accessKeyLabel("label"); // READONLY should error
 
 const reactiveStyle: ReactiveBuilder<{}, (typeof obj)["style"]> = null!;

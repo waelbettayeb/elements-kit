@@ -2,7 +2,8 @@ import ts from "typescript";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-const filename = path.relative(__dirname, "generated.ts");
+const filename = path.resolve(__dirname, "generated.ts");
+console.log(`Generating file at: ${filename}`);
 // Track processed types to avoid duplicates
 const processedTypes = new Set<string>();
 
@@ -17,6 +18,7 @@ function generateHTMLElementBuilder() {
   const checker = program.getTypeChecker();
 
   fs.writeFileSync(filename, "// Auto-generated file\n\n");
+  fs.writeFileSync(filename, 'import type { ReactiveValue } from "./types";\n');
 
   // Find HTMLElementTagNameMap
   const tagNameMapSymbol = checker.resolveName(
@@ -143,16 +145,19 @@ function processTypeHierarchy(
   // Generate interface
   const extendsClause =
     uniqueBaseNames.length > 0
-      ? ` extends ${uniqueBaseNames.map((name) => `${name}Setters`).join(", ")}`
+      ? ` extends ${uniqueBaseNames.map((name) => `${name}Builder`).join(", ")}`
       : "";
 
   fs.appendFileSync(
     filename,
-    `interface ${typeName}Setters${extendsClause} {\n`
+    `interface ${typeName}Builder${extendsClause} {\n`
   );
 
   ownProps.forEach(({ name, typeString }) => {
-    fs.appendFileSync(filename, `  ${name}: ${typeString};\n`);
+    fs.appendFileSync(
+      filename,
+      `  ${name}(value: ReactiveValue<${typeString}>): this;\n`
+    );
   });
 
   fs.appendFileSync(filename, "}\n\n");
