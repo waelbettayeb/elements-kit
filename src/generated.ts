@@ -1,16 +1,31 @@
 import type { ReactiveValue } from "./types";
-interface __typeBuilder {
-}
-
-interface EventTargetBuilder extends __typeBuilder {
-}
-
-interface NodeBuilder extends EventTargetBuilder {
-  nodeValue(value: ReactiveValue<string>): this;
+interface HTMLElementBuilder {
+  accessKey(value: ReactiveValue<string>): this;
+  autocapitalize(value: ReactiveValue<string>): this;
+  autocorrect(value: ReactiveValue<boolean>): this;
+  dir(value: ReactiveValue<string>): this;
+  draggable(value: ReactiveValue<boolean>): this;
+  hidden(value: ReactiveValue<boolean>): this;
+  inert(value: ReactiveValue<boolean>): this;
+  innerText(value: ReactiveValue<string>): this;
+  lang(value: ReactiveValue<string>): this;
+  outerText(value: ReactiveValue<string>): this;
+  popover(value: ReactiveValue<string>): this;
+  spellcheck(value: ReactiveValue<boolean>): this;
+  title(value: ReactiveValue<string>): this;
+  translate(value: ReactiveValue<boolean>): this;
+  writingSuggestions(value: ReactiveValue<string>): this;
+  classList(value: ReactiveValue<string>): this;
+  className(value: ReactiveValue<string>): this;
+  id(value: ReactiveValue<string>): this;
+  innerHTML(value: ReactiveValue<string>): this;
+  outerHTML(value: ReactiveValue<string>): this;
+  part(value: ReactiveValue<string>): this;
+  scrollLeft(value: ReactiveValue<number>): this;
+  scrollTop(value: ReactiveValue<number>): this;
+  slot(value: ReactiveValue<string>): this;
   textContent(value: ReactiveValue<string>): this;
-}
-
-interface ARIAMixinBuilder {
+  nodeValue(value: ReactiveValue<string>): this;
   ariaActiveDescendantElement(value: ReactiveValue<Element>): this;
   ariaAtomic(value: ReactiveValue<string>): this;
   ariaAutoComplete(value: ReactiveValue<string>): this;
@@ -63,70 +78,13 @@ interface ARIAMixinBuilder {
   ariaValueNow(value: ReactiveValue<string>): this;
   ariaValueText(value: ReactiveValue<string>): this;
   role(value: ReactiveValue<string>): this;
-}
-
-interface AnimatableBuilder {
-}
-
-interface ChildNodeBuilder extends NodeBuilder {
-}
-
-interface NonDocumentTypeChildNodeBuilder {
-}
-
-interface ParentNodeBuilder extends NodeBuilder {
-}
-
-interface SlottableBuilder {
-}
-
-interface ElementBuilder extends NodeBuilder, ARIAMixinBuilder, AnimatableBuilder, ChildNodeBuilder, NonDocumentTypeChildNodeBuilder, ParentNodeBuilder, SlottableBuilder {
-  classList(value: ReactiveValue<string>): this;
-  className(value: ReactiveValue<string>): this;
-  id(value: ReactiveValue<string>): this;
-  innerHTML(value: ReactiveValue<string>): this;
-  outerHTML(value: ReactiveValue<string>): this;
-  part(value: ReactiveValue<string>): this;
-  scrollLeft(value: ReactiveValue<number>): this;
-  scrollTop(value: ReactiveValue<number>): this;
-  slot(value: ReactiveValue<string>): this;
-}
-
-interface ElementCSSInlineStyleBuilder {
   style(value: ReactiveValue<string>): this;
-}
-
-interface ElementContentEditableBuilder {
   contentEditable(value: ReactiveValue<string>): this;
   enterKeyHint(value: ReactiveValue<string>): this;
   inputMode(value: ReactiveValue<string>): this;
-}
-
-interface GlobalEventHandlersBuilder {
-}
-
-interface HTMLOrSVGElementBuilder {
   autofocus(value: ReactiveValue<boolean>): this;
   nonce(value: ReactiveValue<string>): this;
   tabIndex(value: ReactiveValue<number>): this;
-}
-
-interface HTMLElementBuilder extends ElementBuilder, ElementCSSInlineStyleBuilder, ElementContentEditableBuilder, GlobalEventHandlersBuilder, HTMLOrSVGElementBuilder {
-  accessKey(value: ReactiveValue<string>): this;
-  autocapitalize(value: ReactiveValue<string>): this;
-  autocorrect(value: ReactiveValue<boolean>): this;
-  dir(value: ReactiveValue<string>): this;
-  draggable(value: ReactiveValue<boolean>): this;
-  hidden(value: ReactiveValue<boolean>): this;
-  inert(value: ReactiveValue<boolean>): this;
-  innerText(value: ReactiveValue<string>): this;
-  lang(value: ReactiveValue<string>): this;
-  outerText(value: ReactiveValue<string>): this;
-  popover(value: ReactiveValue<string>): this;
-  spellcheck(value: ReactiveValue<boolean>): this;
-  title(value: ReactiveValue<string>): this;
-  translate(value: ReactiveValue<boolean>): this;
-  writingSuggestions(value: ReactiveValue<string>): this;
 }
 
 interface HTMLHyperlinkElementUtilsBuilder {
@@ -696,5 +654,444 @@ interface HTMLVideoElementBuilder extends HTMLMediaElementBuilder {
   playsInline(value: ReactiveValue<boolean>): this;
   poster(value: ReactiveValue<string>): this;
   width(value: ReactiveValue<number>): this;
+}
+
+interface SVGGraphicsElementBuilder {
+  classList(value: ReactiveValue<string>): this;
+  id(value: ReactiveValue<string>): this;
+  innerHTML(value: ReactiveValue<string>): this;
+  outerHTML(value: ReactiveValue<string>): this;
+  part(value: ReactiveValue<string>): this;
+  scrollLeft(value: ReactiveValue<number>): this;
+  scrollTop(value: ReactiveValue<number>): this;
+  slot(value: ReactiveValue<string>): this;
+  textContent(value: ReactiveValue<string>): this;
+  nodeValue(value: ReactiveValue<string>): this;
+  ariaActiveDescendantElement(value: ReactiveValue<Element>): this;
+  ariaAtomic(value: ReactiveValue<string>): this;
+  ariaAutoComplete(value: ReactiveValue<string>): this;
+  ariaBrailleLabel(value: ReactiveValue<string>): this;
+  ariaBrailleRoleDescription(value: ReactiveValue<string>): this;
+  ariaBusy(value: ReactiveValue<string>): this;
+  ariaChecked(value: ReactiveValue<string>): this;
+  ariaColCount(value: ReactiveValue<string>): this;
+  ariaColIndex(value: ReactiveValue<string>): this;
+  ariaColIndexText(value: ReactiveValue<string>): this;
+  ariaColSpan(value: ReactiveValue<string>): this;
+  ariaControlsElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaCurrent(value: ReactiveValue<string>): this;
+  ariaDescribedByElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaDescription(value: ReactiveValue<string>): this;
+  ariaDetailsElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaDisabled(value: ReactiveValue<string>): this;
+  ariaErrorMessageElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaExpanded(value: ReactiveValue<string>): this;
+  ariaFlowToElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaHasPopup(value: ReactiveValue<string>): this;
+  ariaHidden(value: ReactiveValue<string>): this;
+  ariaInvalid(value: ReactiveValue<string>): this;
+  ariaKeyShortcuts(value: ReactiveValue<string>): this;
+  ariaLabel(value: ReactiveValue<string>): this;
+  ariaLabelledByElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaLevel(value: ReactiveValue<string>): this;
+  ariaLive(value: ReactiveValue<string>): this;
+  ariaModal(value: ReactiveValue<string>): this;
+  ariaMultiLine(value: ReactiveValue<string>): this;
+  ariaMultiSelectable(value: ReactiveValue<string>): this;
+  ariaOrientation(value: ReactiveValue<string>): this;
+  ariaOwnsElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaPlaceholder(value: ReactiveValue<string>): this;
+  ariaPosInSet(value: ReactiveValue<string>): this;
+  ariaPressed(value: ReactiveValue<string>): this;
+  ariaReadOnly(value: ReactiveValue<string>): this;
+  ariaRelevant(value: ReactiveValue<string>): this;
+  ariaRequired(value: ReactiveValue<string>): this;
+  ariaRoleDescription(value: ReactiveValue<string>): this;
+  ariaRowCount(value: ReactiveValue<string>): this;
+  ariaRowIndex(value: ReactiveValue<string>): this;
+  ariaRowIndexText(value: ReactiveValue<string>): this;
+  ariaRowSpan(value: ReactiveValue<string>): this;
+  ariaSelected(value: ReactiveValue<string>): this;
+  ariaSetSize(value: ReactiveValue<string>): this;
+  ariaSort(value: ReactiveValue<string>): this;
+  ariaValueMax(value: ReactiveValue<string>): this;
+  ariaValueMin(value: ReactiveValue<string>): this;
+  ariaValueNow(value: ReactiveValue<string>): this;
+  ariaValueText(value: ReactiveValue<string>): this;
+  role(value: ReactiveValue<string>): this;
+  style(value: ReactiveValue<string>): this;
+  autofocus(value: ReactiveValue<boolean>): this;
+  nonce(value: ReactiveValue<string>): this;
+  tabIndex(value: ReactiveValue<number>): this;
+}
+
+interface SVGURIReferenceBuilder {
+}
+
+interface SVGAElementBuilder extends SVGGraphicsElementBuilder, SVGURIReferenceBuilder {
+  rel(value: ReactiveValue<string>): this;
+  relList(value: ReactiveValue<string>): this;
+}
+
+interface SVGElementBuilder {
+  classList(value: ReactiveValue<string>): this;
+  id(value: ReactiveValue<string>): this;
+  innerHTML(value: ReactiveValue<string>): this;
+  outerHTML(value: ReactiveValue<string>): this;
+  part(value: ReactiveValue<string>): this;
+  scrollLeft(value: ReactiveValue<number>): this;
+  scrollTop(value: ReactiveValue<number>): this;
+  slot(value: ReactiveValue<string>): this;
+  textContent(value: ReactiveValue<string>): this;
+  nodeValue(value: ReactiveValue<string>): this;
+  ariaActiveDescendantElement(value: ReactiveValue<Element>): this;
+  ariaAtomic(value: ReactiveValue<string>): this;
+  ariaAutoComplete(value: ReactiveValue<string>): this;
+  ariaBrailleLabel(value: ReactiveValue<string>): this;
+  ariaBrailleRoleDescription(value: ReactiveValue<string>): this;
+  ariaBusy(value: ReactiveValue<string>): this;
+  ariaChecked(value: ReactiveValue<string>): this;
+  ariaColCount(value: ReactiveValue<string>): this;
+  ariaColIndex(value: ReactiveValue<string>): this;
+  ariaColIndexText(value: ReactiveValue<string>): this;
+  ariaColSpan(value: ReactiveValue<string>): this;
+  ariaControlsElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaCurrent(value: ReactiveValue<string>): this;
+  ariaDescribedByElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaDescription(value: ReactiveValue<string>): this;
+  ariaDetailsElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaDisabled(value: ReactiveValue<string>): this;
+  ariaErrorMessageElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaExpanded(value: ReactiveValue<string>): this;
+  ariaFlowToElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaHasPopup(value: ReactiveValue<string>): this;
+  ariaHidden(value: ReactiveValue<string>): this;
+  ariaInvalid(value: ReactiveValue<string>): this;
+  ariaKeyShortcuts(value: ReactiveValue<string>): this;
+  ariaLabel(value: ReactiveValue<string>): this;
+  ariaLabelledByElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaLevel(value: ReactiveValue<string>): this;
+  ariaLive(value: ReactiveValue<string>): this;
+  ariaModal(value: ReactiveValue<string>): this;
+  ariaMultiLine(value: ReactiveValue<string>): this;
+  ariaMultiSelectable(value: ReactiveValue<string>): this;
+  ariaOrientation(value: ReactiveValue<string>): this;
+  ariaOwnsElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaPlaceholder(value: ReactiveValue<string>): this;
+  ariaPosInSet(value: ReactiveValue<string>): this;
+  ariaPressed(value: ReactiveValue<string>): this;
+  ariaReadOnly(value: ReactiveValue<string>): this;
+  ariaRelevant(value: ReactiveValue<string>): this;
+  ariaRequired(value: ReactiveValue<string>): this;
+  ariaRoleDescription(value: ReactiveValue<string>): this;
+  ariaRowCount(value: ReactiveValue<string>): this;
+  ariaRowIndex(value: ReactiveValue<string>): this;
+  ariaRowIndexText(value: ReactiveValue<string>): this;
+  ariaRowSpan(value: ReactiveValue<string>): this;
+  ariaSelected(value: ReactiveValue<string>): this;
+  ariaSetSize(value: ReactiveValue<string>): this;
+  ariaSort(value: ReactiveValue<string>): this;
+  ariaValueMax(value: ReactiveValue<string>): this;
+  ariaValueMin(value: ReactiveValue<string>): this;
+  ariaValueNow(value: ReactiveValue<string>): this;
+  ariaValueText(value: ReactiveValue<string>): this;
+  role(value: ReactiveValue<string>): this;
+  style(value: ReactiveValue<string>): this;
+  autofocus(value: ReactiveValue<boolean>): this;
+  nonce(value: ReactiveValue<string>): this;
+  tabIndex(value: ReactiveValue<number>): this;
+}
+
+interface SVGTestsBuilder {
+}
+
+interface SVGAnimationElementBuilder extends SVGElementBuilder, SVGTestsBuilder {
+}
+
+interface SVGAnimateElementBuilder extends SVGAnimationElementBuilder {
+}
+
+interface SVGAnimateMotionElementBuilder extends SVGAnimationElementBuilder {
+}
+
+interface SVGAnimateTransformElementBuilder extends SVGAnimationElementBuilder {
+}
+
+interface SVGGeometryElementBuilder extends SVGGraphicsElementBuilder {
+}
+
+interface SVGCircleElementBuilder extends SVGGeometryElementBuilder {
+}
+
+interface SVGClipPathElementBuilder extends SVGElementBuilder {
+}
+
+interface SVGDefsElementBuilder extends SVGGraphicsElementBuilder {
+}
+
+interface SVGDescElementBuilder extends SVGElementBuilder {
+}
+
+interface SVGEllipseElementBuilder extends SVGGeometryElementBuilder {
+}
+
+interface SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFEBlendElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFEColorMatrixElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFEComponentTransferElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFECompositeElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFEConvolveMatrixElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFEDiffuseLightingElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFEDisplacementMapElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFEDistantLightElementBuilder extends SVGElementBuilder {
+}
+
+interface SVGFEDropShadowElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFEFloodElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGComponentTransferFunctionElementBuilder extends SVGElementBuilder {
+}
+
+interface SVGFEFuncAElementBuilder extends SVGComponentTransferFunctionElementBuilder {
+}
+
+interface SVGFEFuncBElementBuilder extends SVGComponentTransferFunctionElementBuilder {
+}
+
+interface SVGFEFuncGElementBuilder extends SVGComponentTransferFunctionElementBuilder {
+}
+
+interface SVGFEFuncRElementBuilder extends SVGComponentTransferFunctionElementBuilder {
+}
+
+interface SVGFEGaussianBlurElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFEImageElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder, SVGURIReferenceBuilder {
+}
+
+interface SVGFEMergeElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFEMergeNodeElementBuilder extends SVGElementBuilder {
+}
+
+interface SVGFEMorphologyElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFEOffsetElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFEPointLightElementBuilder extends SVGElementBuilder {
+}
+
+interface SVGFESpecularLightingElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFESpotLightElementBuilder extends SVGElementBuilder {
+}
+
+interface SVGFETileElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFETurbulenceElementBuilder extends SVGElementBuilder, SVGFilterPrimitiveStandardAttributesBuilder {
+}
+
+interface SVGFilterElementBuilder extends SVGElementBuilder, SVGURIReferenceBuilder {
+}
+
+interface SVGForeignObjectElementBuilder extends SVGGraphicsElementBuilder {
+}
+
+interface SVGGElementBuilder extends SVGGraphicsElementBuilder {
+}
+
+interface SVGImageElementBuilder extends SVGGraphicsElementBuilder, SVGURIReferenceBuilder {
+  crossOrigin(value: ReactiveValue<string>): this;
+}
+
+interface SVGLineElementBuilder extends SVGGeometryElementBuilder {
+}
+
+interface SVGGradientElementBuilder extends SVGElementBuilder, SVGURIReferenceBuilder {
+}
+
+interface SVGLinearGradientElementBuilder extends SVGGradientElementBuilder {
+}
+
+interface SVGFitToViewBoxBuilder {
+}
+
+interface SVGMarkerElementBuilder extends SVGElementBuilder, SVGFitToViewBoxBuilder {
+}
+
+interface SVGMaskElementBuilder extends SVGElementBuilder {
+}
+
+interface SVGMetadataElementBuilder extends SVGElementBuilder {
+}
+
+interface SVGMPathElementBuilder extends SVGElementBuilder, SVGURIReferenceBuilder {
+}
+
+interface SVGPathElementBuilder extends SVGGeometryElementBuilder {
+}
+
+interface SVGPatternElementBuilder extends SVGElementBuilder, SVGFitToViewBoxBuilder, SVGURIReferenceBuilder {
+}
+
+interface SVGAnimatedPointsBuilder {
+}
+
+interface SVGPolygonElementBuilder extends SVGGeometryElementBuilder, SVGAnimatedPointsBuilder {
+}
+
+interface SVGPolylineElementBuilder extends SVGGeometryElementBuilder, SVGAnimatedPointsBuilder {
+}
+
+interface SVGRadialGradientElementBuilder extends SVGGradientElementBuilder {
+}
+
+interface SVGRectElementBuilder extends SVGGeometryElementBuilder {
+}
+
+interface SVGScriptElementBuilder extends SVGElementBuilder, SVGURIReferenceBuilder {
+  type(value: ReactiveValue<string>): this;
+}
+
+interface SVGSetElementBuilder extends SVGAnimationElementBuilder {
+}
+
+interface SVGStopElementBuilder extends SVGElementBuilder {
+}
+
+interface SVGStyleElementBuilder extends SVGElementBuilder, LinkStyleBuilder {
+  disabled(value: ReactiveValue<boolean>): this;
+  media(value: ReactiveValue<string>): this;
+  title(value: ReactiveValue<string>): this;
+  type(value: ReactiveValue<string>): this;
+}
+
+interface SVGSVGElementBuilder extends SVGGraphicsElementBuilder, SVGFitToViewBoxBuilder, WindowEventHandlersBuilder {
+  currentScale(value: ReactiveValue<number>): this;
+}
+
+interface SVGSwitchElementBuilder extends SVGGraphicsElementBuilder {
+}
+
+interface SVGSymbolElementBuilder extends SVGElementBuilder, SVGFitToViewBoxBuilder {
+}
+
+interface SVGTextContentElementBuilder extends SVGGraphicsElementBuilder {
+}
+
+interface SVGTextPositioningElementBuilder extends SVGTextContentElementBuilder {
+}
+
+interface SVGTextElementBuilder extends SVGTextPositioningElementBuilder {
+}
+
+interface SVGTextPathElementBuilder extends SVGTextContentElementBuilder, SVGURIReferenceBuilder {
+}
+
+interface SVGTitleElementBuilder extends SVGElementBuilder {
+}
+
+interface SVGTSpanElementBuilder extends SVGTextPositioningElementBuilder {
+}
+
+interface SVGUseElementBuilder extends SVGGraphicsElementBuilder, SVGURIReferenceBuilder {
+}
+
+interface SVGViewElementBuilder extends SVGElementBuilder, SVGFitToViewBoxBuilder {
+}
+
+interface MathMLElementBuilder {
+  classList(value: ReactiveValue<string>): this;
+  className(value: ReactiveValue<string>): this;
+  id(value: ReactiveValue<string>): this;
+  innerHTML(value: ReactiveValue<string>): this;
+  outerHTML(value: ReactiveValue<string>): this;
+  part(value: ReactiveValue<string>): this;
+  scrollLeft(value: ReactiveValue<number>): this;
+  scrollTop(value: ReactiveValue<number>): this;
+  slot(value: ReactiveValue<string>): this;
+  textContent(value: ReactiveValue<string>): this;
+  nodeValue(value: ReactiveValue<string>): this;
+  ariaActiveDescendantElement(value: ReactiveValue<Element>): this;
+  ariaAtomic(value: ReactiveValue<string>): this;
+  ariaAutoComplete(value: ReactiveValue<string>): this;
+  ariaBrailleLabel(value: ReactiveValue<string>): this;
+  ariaBrailleRoleDescription(value: ReactiveValue<string>): this;
+  ariaBusy(value: ReactiveValue<string>): this;
+  ariaChecked(value: ReactiveValue<string>): this;
+  ariaColCount(value: ReactiveValue<string>): this;
+  ariaColIndex(value: ReactiveValue<string>): this;
+  ariaColIndexText(value: ReactiveValue<string>): this;
+  ariaColSpan(value: ReactiveValue<string>): this;
+  ariaControlsElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaCurrent(value: ReactiveValue<string>): this;
+  ariaDescribedByElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaDescription(value: ReactiveValue<string>): this;
+  ariaDetailsElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaDisabled(value: ReactiveValue<string>): this;
+  ariaErrorMessageElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaExpanded(value: ReactiveValue<string>): this;
+  ariaFlowToElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaHasPopup(value: ReactiveValue<string>): this;
+  ariaHidden(value: ReactiveValue<string>): this;
+  ariaInvalid(value: ReactiveValue<string>): this;
+  ariaKeyShortcuts(value: ReactiveValue<string>): this;
+  ariaLabel(value: ReactiveValue<string>): this;
+  ariaLabelledByElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaLevel(value: ReactiveValue<string>): this;
+  ariaLive(value: ReactiveValue<string>): this;
+  ariaModal(value: ReactiveValue<string>): this;
+  ariaMultiLine(value: ReactiveValue<string>): this;
+  ariaMultiSelectable(value: ReactiveValue<string>): this;
+  ariaOrientation(value: ReactiveValue<string>): this;
+  ariaOwnsElements(value: ReactiveValue<readonly Element[]>): this;
+  ariaPlaceholder(value: ReactiveValue<string>): this;
+  ariaPosInSet(value: ReactiveValue<string>): this;
+  ariaPressed(value: ReactiveValue<string>): this;
+  ariaReadOnly(value: ReactiveValue<string>): this;
+  ariaRelevant(value: ReactiveValue<string>): this;
+  ariaRequired(value: ReactiveValue<string>): this;
+  ariaRoleDescription(value: ReactiveValue<string>): this;
+  ariaRowCount(value: ReactiveValue<string>): this;
+  ariaRowIndex(value: ReactiveValue<string>): this;
+  ariaRowIndexText(value: ReactiveValue<string>): this;
+  ariaRowSpan(value: ReactiveValue<string>): this;
+  ariaSelected(value: ReactiveValue<string>): this;
+  ariaSetSize(value: ReactiveValue<string>): this;
+  ariaSort(value: ReactiveValue<string>): this;
+  ariaValueMax(value: ReactiveValue<string>): this;
+  ariaValueMin(value: ReactiveValue<string>): this;
+  ariaValueNow(value: ReactiveValue<string>): this;
+  ariaValueText(value: ReactiveValue<string>): this;
+  role(value: ReactiveValue<string>): this;
+  style(value: ReactiveValue<string>): this;
+  autofocus(value: ReactiveValue<boolean>): this;
+  nonce(value: ReactiveValue<string>): this;
+  tabIndex(value: ReactiveValue<number>): this;
 }
 

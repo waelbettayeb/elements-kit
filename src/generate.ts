@@ -24,24 +24,28 @@ function resolveSymbol(name: string, flags: ts.SymbolFlags) {
   return checker.resolveName(name, undefined, flags, false);
 }
 
-function generateHTMLElementBuilder() {
+const TAG_MAPS = [
+  "HTMLElementTagNameMap",
+  "SVGElementTagNameMap",
+  "MathMLElementTagNameMap",
+];
+function generateHTMLElementBuilders() {
   fs.writeFileSync(filename, "// Auto-generated file\n\n");
   fs.writeFileSync(filename, 'import type { ReactiveValue } from "./types";\n');
 
-  const tagNameMap = resolveSymbol(
-    "HTMLElementTagNameMap",
-    ts.SymbolFlags.Interface
-  );
+  TAG_MAPS.forEach((mapName) => {
+    const tagNameMap = resolveSymbol(mapName, ts.SymbolFlags.Interface);
 
-  if (!tagNameMap) throw new Error("Could not find HTMLElementTagNameMap");
+    if (!tagNameMap) throw new Error("Could not find HTMLElementTagNameMap");
 
-  for (const [_name, tag] of tagNameMap.members) {
-    const elementType = checker.getTypeOfSymbolAtLocation(
-      tag,
-      tag.valueDeclaration!
-    );
-    processTypeHierarchy(checker, elementType);
-  }
+    for (const [_name, tag] of tagNameMap.members) {
+      const elementType = checker.getTypeOfSymbolAtLocation(
+        tag,
+        tag.valueDeclaration!
+      );
+      processTypeHierarchy(elementType);
+    }
+  });
 }
 
 // Helper function to get unique own properties (not inherited)
@@ -49,16 +53,18 @@ function getOwnWritableProperties(
   checker: ts.TypeChecker,
   type: ts.Type
 ): Map<string, { name: string; typeString: string }> {
+  const name = type.getSymbol()?.getName() || "unknown";
   const allProperties = checker.getPropertiesOfType(type);
   const baseTypes = type.getBaseTypes() || [];
 
   // Get all inherited property names
   const inheritedProps = new Set<string>();
-  baseTypes.forEach((baseType) => {
-    checker.getPropertiesOfType(baseType).forEach((prop) => {
-      inheritedProps.add(prop.getName());
+  if (!BASE_TYPES.includes(name))
+    baseTypes.forEach((baseType) => {
+      checker.getPropertiesOfType(baseType).forEach((prop) => {
+        inheritedProps.add(prop.getName());
+      });
     });
-  });
 
   const ownProperties = new Map<string, { name: string; typeString: string }>();
 
@@ -102,16 +108,25 @@ function getOwnWritableProperties(
   return ownProperties;
 }
 
+const BASE_TYPES = [
+  "HTMLElement",
+  "Element",
+  "Node",
+  "EventTarget",
+  "SVGElement",
+  "SVGGraphicsElement",
+  "MathMLElement",
+];
+
 // Process a type and its base types recursively
-function processTypeHierarchy(
-  checker: ts.TypeChecker,
-  type: ts.Type
-): string[] {
+function processTypeHierarchy(type: ts.Type): string[] {
   const symbol = type.getSymbol();
   if (!symbol) return [];
 
   const typeName = symbol.getName();
-
+  if (typeName === "__type") {
+    return [];
+  }
   // If already processed, return just the name
   if (processedTypes.has(typeName)) {
     return [typeName];
@@ -123,10 +138,11 @@ function processTypeHierarchy(
   const baseTypes = type.getBaseTypes() || [];
   const baseTypeNames: string[] = [];
 
-  baseTypes.forEach((baseType) => {
-    const processed = processTypeHierarchy(checker, baseType);
-    baseTypeNames.push(...processed);
-  });
+  if (!BASE_TYPES.includes(typeName))
+    baseTypes.forEach((baseType) => {
+      const processed = processTypeHierarchy(baseType);
+      baseTypeNames.push(...processed);
+    });
 
   // Get unique base type names for extends clause
   const uniqueBaseNames = [...new Set(baseTypeNames)];
@@ -153,9 +169,8 @@ function processTypeHierarchy(
   });
 
   fs.appendFileSync(filename, "}\n\n");
-  console.log(`Processing ${typeName}...`);
 
   return [typeName];
 }
 
-generateHTMLElementBuilder();
+generateHTMLElementBuilders();
