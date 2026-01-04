@@ -8,22 +8,22 @@ function isObject(v: unknown): v is Record<string | symbol, unknown> {
   return typeof v === "object" && v !== null && !Array.isArray(v);
 }
 
-export function dispose(v: ReactiveHTMLElement) {
+export function dispose(v: ReactiveElement) {
   v[DISPOSE]();
 }
 
-export function render(v: ReactiveHTMLElement): HTMLElement {
+export function render(v: ReactiveElement): Element {
   return v[RENDER]();
 }
 
-interface ReactiveHTMLElement extends HTMLElement {
+interface ReactiveElement extends Element {
   [DISPOSE](): void;
   [EFFECT](fn: () => void): void;
-  [RENDER](): HTMLElement;
+  [RENDER](): Element;
 }
 
 function objectOrSetter<T extends Record<string | symbol, unknown>>(
-  root: ReactiveHTMLElement,
+  root: ReactiveElement,
   obj: T,
   key: keyof T
 ) {
@@ -55,7 +55,7 @@ function objectOrSetter<T extends Record<string | symbol, unknown>>(
   });
 }
 
-export function reactive(el: HTMLElement): ReactiveHTMLElement {
+export function reactive(el: Element): ReactiveElement {
   const effects = new Set<() => () => void>();
   const disposables = new Set<() => void>();
 
@@ -68,7 +68,7 @@ export function reactive(el: HTMLElement): ReactiveHTMLElement {
     disposables.clear();
   };
   const proxy = new Proxy(el, {
-    get(target, key: keyof HTMLElement, receiver) {
+    get(target, key: keyof Element, receiver) {
       if ("dispose" in Symbol && key === Symbol.dispose) {
         return dispose;
       }
