@@ -1,8 +1,10 @@
-import ts from "typescript";
+import * as ts from "typescript";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const filename = path.resolve(__dirname, "builder.ts");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const filename = path.resolve(__dirname, "../src", "builder.ts");
 console.log(`Generating file at: ${filename}`);
 // Track processed types to avoid duplicates
 const processedTypes = new Set<string>();
@@ -82,18 +84,24 @@ function writeProperties(type: ts.Type) {
     const getter = declarations.find(ts.isGetAccessor);
     if (getter) {
       const propType = getterParam(prop, getter);
-      let typeString = checker.typeToString(propType);
       if (propType.flags & ts.TypeFlags.Object) {
         // TODO: object chaining support
+        console.log(
+          "Object chaining not supported yet for",
+          name,
+          checker.typeToString(propType)
+        );
       }
-      fs.appendFileSync(filename, `  ${name}(): ${typeString};\n`);
     } else if (property) {
       const propType = checker.getTypeOfSymbolAtLocation(prop, property);
       if (propType.flags & ts.TypeFlags.Object) {
         // TODO: object chaining support
+        console.log(
+          "Object chaining not supported yet for",
+          name,
+          checker.typeToString(propType)
+        );
       }
-      let typeString = checker.typeToString(propType);
-      fs.appendFileSync(filename, `  ${name}(): ${typeString};\n`);
     }
 
     const setter = declarations.find(ts.isSetAccessor);
