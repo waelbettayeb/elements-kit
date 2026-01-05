@@ -52,18 +52,20 @@ function generateHTMLElementBuilders() {
 
 // Helper function to get unique own properties (not inherited from base types)
 function writeProperties(type: ts.Type) {
-  const name = type.getSymbol()?.getName() || "unknown";
   const allProperties = checker.getPropertiesOfType(type);
-  const baseTypes = type.getBaseTypes() || [];
+  const baseTypes = type.getBaseTypes().filter((baseType) => {
+    const baseTypeName = baseType.getSymbol()?.getName();
+    return baseTypeName !== undefined && !BASE_TYPES.includes(baseTypeName);
+  });
 
   // Get all inherited property names
   const inheritedProps = new Set<string>();
-  if (!BASE_TYPES.includes(name))
-    baseTypes.forEach((baseType) => {
-      checker.getPropertiesOfType(baseType).forEach((prop) => {
-        inheritedProps.add(prop.getName());
-      });
+
+  baseTypes.forEach((baseType) => {
+    checker.getPropertiesOfType(baseType).forEach((prop) => {
+      inheritedProps.add(prop.getName());
     });
+  });
 
   allProperties.forEach((prop) => {
     const name = prop.getName();
@@ -150,14 +152,16 @@ function processTypeHierarchy(type: ts.Type): string[] {
   processedTypes.add(typeName);
 
   // Process base types first
-  const baseTypes = type.getBaseTypes() || [];
+  const baseTypes = type.getBaseTypes().filter((baseType) => {
+    const baseTypeName = baseType.getSymbol()?.getName();
+    return baseTypeName !== undefined && BASE_TYPES.includes(baseTypeName);
+  });
   const baseTypeNames: string[] = [];
 
-  if (!BASE_TYPES.includes(typeName))
-    baseTypes.forEach((baseType) => {
-      const processed = processTypeHierarchy(baseType);
-      baseTypeNames.push(...processed);
-    });
+  baseTypes.forEach((baseType) => {
+    const processed = processTypeHierarchy(baseType);
+    baseTypeNames.push(...processed);
+  });
 
   // Get unique base type names for extends clause
   const uniqueBaseNames = [...new Set(baseTypeNames)];
