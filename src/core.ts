@@ -1,7 +1,7 @@
-import { isSignal, effect } from "./signals";
+import { effect, isReactiveValue } from "./signals";
 
 export const DISPOSE: unique symbol = Symbol("dispose");
-export const RENDER: unique symbol = Symbol("render");
+export const ELEMENT: unique symbol = Symbol("element");
 export const EFFECT: unique symbol = Symbol("effect");
 
 function isObject(v: unknown): v is Record<string | symbol, unknown> {
@@ -12,14 +12,14 @@ export function dispose(v: ReactiveElement) {
   v[DISPOSE]();
 }
 
-export function render(v: ReactiveElement): Element {
-  return v[RENDER]();
+export function element(v: ReactiveElement): Element {
+  return v[ELEMENT]();
 }
 
-interface ReactiveElement extends Element {
+export interface ReactiveElement extends Element {
   [DISPOSE](): void;
   [EFFECT](fn: () => void): void;
-  [RENDER](): Element;
+  [ELEMENT](): Element;
 }
 
 function objectOrSetter<T extends Record<string | symbol, unknown>>(
@@ -33,7 +33,7 @@ function objectOrSetter<T extends Record<string | symbol, unknown>>(
       return root;
     }
     const value = args[0];
-    if (isSignal(value)) {
+    if (isReactiveValue(value)) {
       root[EFFECT](() => {
         obj[key] = value();
       });
@@ -80,7 +80,7 @@ export function reactive(el: Element): ReactiveElement {
           effects.add(fn);
         };
       }
-      if ((key as unknown as symbol) === RENDER) {
+      if ((key as unknown as symbol) === ELEMENT) {
         return () => {
           dispatchEffects();
           return target;
@@ -98,7 +98,7 @@ export function reactive(el: Element): ReactiveElement {
           return receiver;
         }
         const value = args[0];
-        if (isSignal(value)) {
+        if (isReactiveValue(value)) {
           effects.add(() =>
             effect(() => {
               console.log("updating", key.toString(), "to", value());

@@ -1,12 +1,11 @@
 import { computed, signal } from "../../src/signals";
-import { render, reactive } from "../../src/core";
-import { span } from "../../src/builder";
+import { element, reactive } from "../../src/core";
+import { span, div } from "../../src/builder";
 
 const value = signal(0);
 
-const div = () => reactive(document.createElement("div"));
-const el = div()
-  .textContent(value)
+const myelement = div()
+  .textContent(computed(() => `The value is: ${value()}`))
   .style.backgroundColor("lightblue")
   .style.padding("20px");
 
@@ -19,4 +18,4 @@ const interval = setInterval(() => {
   value(value() + 1);
 }, 1000);
 
-document.getElementById("app")?.appendChild(child.el);
+document.getElementById("app")?.appendChild(element(myelement));

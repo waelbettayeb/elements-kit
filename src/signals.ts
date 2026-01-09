@@ -1,6 +1,5 @@
 export * from "alien-signals";
 import { isSignal, isComputed } from "alien-signals";
-import { ReactiveValue } from "./types";
 
 export function isReactiveValue<T>(
   value: (() => void) | T

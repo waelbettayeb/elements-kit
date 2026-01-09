@@ -32,17 +32,17 @@ const TAG_MAPS = [
   "SVGElementTagNameMap",
   "MathMLElementTagNameMap",
 ];
+const tags = new Set();
 function generateHTMLElementBuilders() {
   fs.writeFileSync(filename, "// Auto-generated file\n\n");
-  fs.writeFileSync(
+  fs.appendFileSync(
     filename,
-    `
-import type { ReactiveValue } from "./types";
-import { isReactiveValue, effect } from "./signals";
-`
+    'import type { ReactiveValue } from "./types";\n'
   );
-
-  const tags = new Set();
+  fs.appendFileSync(
+    filename,
+    'import { reactive, ReactiveElement } from "./core";\n'
+  );
 
   TAG_MAPS.forEach((mapName) => {
     const tagNameMap = resolveSymbol(mapName, ts.SymbolFlags.Interface);
@@ -56,6 +56,7 @@ import { isReactiveValue, effect } from "./signals";
       );
       processTypeHierarchy(elementType);
       const elementCls = checker.typeToString(elementType);
+
       if (tags.has(name)) continue;
       tags.add(name);
       const finalName = transformTagName(name as string);
@@ -63,10 +64,8 @@ import { isReactiveValue, effect } from "./signals";
       fs.appendFileSync(
         filename,
         `
-export const ${finalName} = () => new ${elementCls}Builder(document.createElement("${name}")${
-          elementCls !== "HTMLElement" ? ` as unknown as ${elementCls}` : ""
-        });
-      `
+export const ${finalName} = () => reactive(document.createElement("${name}")) as ReactiveElement & ${elementCls}Builder;
+            `
       );
     }
   });
@@ -134,41 +133,15 @@ function writeProperties(type: ts.Type) {
       let typeString = checker.typeToString(paramType);
       fs.appendFileSync(
         filename,
-        `
-  ${name}(value: ReactiveValue<${typeString}>): this {
-    if (isReactiveValue(value)) {
-      effect(() => {
-        this.el.${name} = value();
-      });
-      return this
-    }
-    this.el.${name} = value;
-    return this;
-  }
-`
+        `  ${name}(value: ReactiveValue<${typeString}>): this;\n`
       );
     } else if (property && !isReadonly(prop)) {
       const propType = checker.getTypeOfSymbolAtLocation(prop, property);
       let typeString = checker.typeToString(propType);
       fs.appendFileSync(
         filename,
-        `
-  ${name}(value: ReactiveValue<${typeString}>): this {
-    if (isReactiveValue(value)) {
-      effect(() => {
-        this.el.${name} = value();
-      });
-      return this
-    }
-    this.el.${name} = value;
-    return this;
-  }
-`
+        `  ${name}(value: ReactiveValue<${typeString}>): this;\n`
       );
-      // fs.appendFileSync(
-      //   filename,
-      //   `  ${name}(value: ReactiveValue<${typeString}>): this;\n`
-      // );
     }
   });
 }
@@ -222,13 +195,7 @@ function processTypeHierarchy(type: ts.Type): string[] {
 
   fs.appendFileSync(
     filename,
-    `
-class ${typeName}Builder${extendsClause} {
-  el: ${typeName};
-  constructor(el: ${typeName}) {
-    ${uniqueBaseNames.length > 0 ? "super(el);" : "this.el = el;"}
-  }
-`
+    `interface ${typeName}Builder${extendsClause} {\n`
   );
 
   // Get only own properties (not inherited)
