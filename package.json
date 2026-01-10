@@ -1,5 +1,5 @@
 {
-  "name": "@wael_bettayeb/webelements",
+  "name": "elements-kit",
   "type": "module",
   "version": "0.0.1",
   "description": "A lightweight reactive UI library that transforms native HTMLElements into reactive components with signals. Ideal for framework-agnostic applications and web components.",
@@ -42,7 +42,7 @@
   },
   "packageManager": "pnpm@10.26.2",
   "devDependencies": {
-    "tsdown": "0.18.4",
+    "tsdown": "0.19.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
