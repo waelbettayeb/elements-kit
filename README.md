@@ -54,22 +54,7 @@ button()
 
 ## Make Existing Objects Reactive
 
-Wrap existing HTMLElements or objects to make them reactive using the `reactive()` function.
-
-```ts
-import { reactive } from "elements-kit/core";
-import { signal } from "elements-kit/signals";
-
-const name = signal("John");
-const obj = {
-  name: "John",
-  age: 30
-};
-reactive(obj).name(name);
-name("Doe"); // Updates name reactively
-```
-
-Transform any existing DOM element ref into a reactive element:
+Transform any existing element reference into a reactive builder using the `reactive()` function.
 
 ```ts
 const canvasRef = document.createElement("canvas");
