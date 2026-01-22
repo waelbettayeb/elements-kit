@@ -10,7 +10,7 @@ const myelement = div()
   .style.padding("20px")(
   button()
     .textContent("Increment")
-    .[ON]("click", () => {
+    [ON]("click", () => {
       value(value() + 1);
     }),
   span()

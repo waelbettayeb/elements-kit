@@ -46,7 +46,7 @@ const count = signal(0);
 
 button()
   .textContent("Click me")
-  .[ON]("click", (e) => {
+  [ON]("click", (e) => {
     count(count() + 1);
     console.log("Clicked!", e.target);
   }, { once: true });
@@ -107,6 +107,7 @@ color("red");
 - [ ] Async signal
 - [ ] URLPattern signal <https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API>
 - [ ] document reactive element (set and get cookies, delegate events)
+- [ ] Builder extensions (like style extensions)
 
 - [ ] Context?
 - [ ] Conditional rendering?
