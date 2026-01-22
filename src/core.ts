@@ -3,13 +3,15 @@ import type { computed, signal } from "./signals";
 
 export const DISPOSABLES: unique symbol = Symbol("disposables");
 export const DISPOSE: unique symbol = Symbol("dispose");
+export const VALUE: unique symbol = Symbol("value");
 export const REF: unique symbol = Symbol("ref");
 export const APPLY: unique symbol = Symbol("apply");
 export const EFFECT: unique symbol = Symbol("effect");
+export const ON: unique symbol = Symbol("on");
 
 class ElementBuilder<T extends Element = Element> {
   /** The underlying DOM element */
-  [REF]: T;
+  [VALUE]: T;
   // TODO: should we track effects separately?
   /** A set of cleanup functions to run when disposing the element */
   private [DISPOSABLES] = new Set<() => void>();
@@ -19,14 +21,14 @@ class ElementBuilder<T extends Element = Element> {
     this[DISPOSABLES].clear();
   }
   private constructor(el: T) {
-    this[REF] = el;
+    this[VALUE] = el;
   }
 
   [APPLY](this: ElementBuilder, ...children: (ElementBuilder | Element)[]) {
-    const el = this[REF];
+    const el = this[VALUE];
     if (children.length === 0) return el;
 
-    const _children = children.map((c) => c[REF] ?? c);
+    const _children = children.map((c) => c[VALUE] ?? c);
     el.replaceChildren(..._children);
     return el;
   }
@@ -38,7 +40,7 @@ class ElementBuilder<T extends Element = Element> {
         return Reflect.apply(builder[APPLY], builder, argArray);
       },
       get(_target, key, receiver) {
-        const el = builder[REF];
+        const el = builder[VALUE];
         if (key in builder) {
           return Reflect.get(builder, key, receiver);
         }
@@ -47,14 +49,22 @@ class ElementBuilder<T extends Element = Element> {
       },
     }) as unknown as ReactiveElement<T>;
   }
-  on(
+
+  [REF](apply: (ref: T) => void | (() => void)) {
+    const result = apply(this[VALUE]);
+    if (typeof result === "function") {
+      this[DISPOSABLES].add(result);
+    }
+    return this;
+  }
+  [ON](
     eventType: string,
     listener: EventListenerOrEventListenerObject,
     options?: boolean | AddEventListenerOptions,
   ) {
-    this[REF].addEventListener(eventType, listener, options);
+    this[VALUE].addEventListener(eventType, listener, options);
     this[DISPOSABLES].add(() => {
-      this[REF].removeEventListener(eventType, listener, options);
+      this[VALUE].removeEventListener(eventType, listener, options);
     });
     return this;
   }

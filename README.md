@@ -38,24 +38,57 @@ document.body.appendChild(element(Elements))
 
 ## Event Listeners
 
-Attach event listeners using the `.on()` method with full TypeScript inference and standard [EventListener options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#options).
+Attach event listeners using the `.[ON]()` method with full TypeScript inference and standard [EventListener options](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#options).
 
 ```ts
+import { ON } from "elements-kit/core"
 const count = signal(0);
 
 button()
   .textContent("Click me")
-  .on("click", (e) => {
+  .[ON]("click", (e) => {
     count(count() + 1);
     console.log("Clicked!", e.target);
   }, { once: true });
+```
+
+## Element Reference
+
+Access the underlying DOM element directly using the `[REF]` symbol when you need to use native APIs or third-party libraries.
+
+> **Note:** Direct DOM manipulation via `[REF]` bypasses reactivity. Wrap changes in `effect()` for reactive updates.
+
+```ts
+import { REF } from "elements-kit/core";
+import { signal, effect } from "elements-kit/signals";
+
+const canvasRef = signal<HTMLCanvasElement | null>(null);
+const color = signal("blue");
+
+const chart = canvas()
+  [REF]((canvas) => {
+    canvasRef(canvas); // Store reference for later use
+    
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    
+    // Reactive drawing - redraws when color changes
+    return effect(() => {
+      ctx.fillStyle = color();
+      ctx.fillRect(0, 0, 150, 100);
+    });
+  })
+  .width("300")
+  .height("200");
+
+// Later: change color triggers redraw
+color("red");
 ```
 
 ## TO-DO
 
 - [ ] Complete type safety
 - [ ] Function calling (like classList reactive adder, attributes)
-- [ ] Ref access
 - [ ] Async signal
 - [ ] URLPattern signal <https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API>
 - [ ] document reactive element (set and get cookies, delegate events)
