@@ -35,7 +35,7 @@ class ElementBuilder<T extends Element = Element> {
     const builder = new ElementBuilder<T>(el);
     return new Proxy(builder[APPLY], {
       apply(_target, _thisArg, argArray) {
-        return builder[APPLY](...argArray);
+        return Reflect.apply(builder[APPLY], builder, argArray);
       },
       get(_target, key, receiver) {
         const el = builder[REF];
