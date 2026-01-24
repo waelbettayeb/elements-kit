@@ -1,6 +1,6 @@
 import { computed, signal } from "../../src/signals";
 import { div, span, button, h1, h2, p, input, pre, code, header, canvas, nav, a } from "../../src/dom";
-import { REF, ON, VALUE } from "../../src/core";
+import { REF, ON, VALUE, when, show } from "../../src/core";
 
 // ============================================
 // Example Registry
@@ -183,8 +183,8 @@ function refExample() {
         .style.flexDirection("column")
         .style.gap("12px")(
           canvas()
-            .width("400")
-            .height("120")
+            .width(400)
+            .height(120)
             .style.borderRadius("8px")
             .style.backgroundColor("#1a1a2e")
             .style.cursor("crosshair")
@@ -367,6 +367,194 @@ input()
 }
 
 // ============================================
+// Example 7: Conditional Rendering
+// ============================================
+function conditionalRenderingExample() {
+  const isLoggedIn = signal(false);
+  const showDetails = signal(true);
+
+  return div().className("example-card")(
+    h2()("Conditional Rendering"),
+    p().className("description")("Use when() to swap elements and show() to toggle visibility based on signals."),
+    div().className("demo-area")(
+      div()
+        .style.display("flex")
+        .style.flexDirection("column")
+        .style.gap("24px")(
+          // when() example
+          div()(
+            div()
+              .style.marginBottom("12px")
+              .style.fontWeight("bold")("when() - Element Swapping"),
+            div()
+              .style.display("flex")
+              .style.alignItems("center")
+              .style.gap("16px")(
+                when(
+                  () => isLoggedIn(),
+                  () => div()
+                    .style.display("flex")
+                    .style.alignItems("center")
+                    .style.gap("12px")(
+                      span()
+                        .style.padding("8px 16px")
+                        .style.background("rgba(0, 217, 255, 0.1)")
+                        .style.borderRadius("8px")
+                        .style.border("1px solid rgba(0, 217, 255, 0.3)")("Welcome back, User!"),
+                      button()
+                        .textContent("Logout")
+                        [ON]("click", () => isLoggedIn(false))
+                    ),
+                  () => button()
+                    .textContent("Login")
+                    .style.padding("8px 20px")
+                    [ON]("click", () => isLoggedIn(true))
+                )
+              )
+          ),
+          // show() example
+          div()(
+            div()
+              .style.marginBottom("12px")
+              .style.fontWeight("bold")("show() - Visibility Toggle"),
+            div()
+              .style.display("flex")
+              .style.flexDirection("column")
+              .style.gap("12px")(
+                button()
+                  .textContent(computed(() => showDetails() ? "Hide Details" : "Show Details"))
+                  .style.alignSelf("flex-start")
+                  [ON]("click", () => showDetails(!showDetails())),
+                show(
+                  () => showDetails(),
+                  div()
+                    .style.padding("16px")
+                    .style.background("rgba(0, 217, 255, 0.1)")
+                    .style.borderRadius("8px")
+                    .style.border("1px solid rgba(0, 217, 255, 0.3)")(
+                      p().style.margin("0")("This content can be toggled with show()."),
+                      p().style.margin("8px 0 0 0").style.color("#888")("Unlike when(), the element stays in the DOM but is hidden with display: none.")
+                    )
+                )
+              )
+          )
+        )
+    ),
+    pre().className("code-block")(
+      code()(`// when() - swaps elements in/out of DOM
+const isLoggedIn = signal(false);
+
+when(
+  () => isLoggedIn(),
+  () => span()("Welcome back!"),
+  () => button().textContent("Login")
+);
+
+// show() - toggles visibility (display: none)
+const visible = signal(true);
+
+show(
+  () => visible(),
+  div()("I can be hidden")
+);`)
+    )
+  );
+}
+
+// ============================================
+// Example 8: Reactive Children (Signal Children)
+// ============================================
+function reactiveChildrenExample() {
+  const message = signal("Hello");
+  const counter = signal(0);
+
+  return div().className("example-card")(
+    h2()("Reactive Children"),
+    p().className("description")("Pass signals directly as children - they update automatically when the signal changes."),
+    div().className("demo-area")(
+      div()
+        .style.display("flex")
+        .style.flexDirection("column")
+        .style.gap("20px")(
+          // Dynamic text content
+          div()(
+            div()
+              .style.marginBottom("12px")
+              .style.fontWeight("bold")("Dynamic Text with Signals as Children"),
+            div()
+              .style.display("flex")
+              .style.alignItems("center")
+              .style.gap("12px")(
+                button()
+                  .textContent("-")
+                  .style.width("36px")
+                  [ON]("click", () => counter(counter() - 1)),
+                span().style.fontSize("1.1rem")(
+                  "Count: ",
+                  computed(() => String(counter())),
+                  " | Doubled: ",
+                  computed(() => String(counter() * 2))
+                ),
+                button()
+                  .textContent("+")
+                  .style.width("36px")
+                  [ON]("click", () => counter(counter() + 1))
+              )
+          ),
+          // Message input demo
+          div()(
+            div()
+              .style.marginBottom("12px")
+              .style.fontWeight("bold")("Inline Signal Interpolation"),
+            div()
+              .style.display("flex")
+              .style.flexDirection("column")
+              .style.gap("12px")(
+                input()
+                  .type("text")
+                  .value(message())
+                  .placeholder("Type a message...")
+                  [ON]("input", (e) => message((e.target as HTMLInputElement).value)),
+                div()
+                  .style.padding("12px")
+                  .style.background("rgba(59, 130, 246, 0.1)")
+                  .style.borderRadius("8px")
+                  .style.border("1px solid rgba(59, 130, 246, 0.3)")(
+                    "You typed: ",
+                    computed(() => message()),
+                    " (",
+                    computed(() => String(message().length)),
+                    " characters)"
+                  )
+              )
+          )
+        )
+    ),
+    pre().className("code-block")(
+      code()(`const counter = signal(0);
+const message = signal("Hello");
+
+// Signals as direct children - auto-update!
+span()(
+  "Count: ",
+  computed(() => String(counter())),
+  " | Doubled: ",
+  computed(() => String(counter() * 2))
+);
+
+// Mix static and reactive children
+div()(
+  "You typed: ",
+  computed(() => message()),
+  " (",
+  computed(() => String(message().length)),
+  " characters)"
+);`)
+    )
+  );
+}
+
+// ============================================
 // Example Registry
 // ============================================
 const examples: Example[] = [
@@ -375,6 +563,8 @@ const examples: Example[] = [
   { id: "styles", title: "Dynamic Styles", icon: "🎨", component: styleExample },
   { id: "colors", title: "Color Picker", icon: "🌈", component: colorPickerExample },
   { id: "toggle", title: "Conditional Display", icon: "👁", component: conditionalExample },
+  { id: "conditional", title: "Conditional Rendering", icon: "🔀", component: conditionalRenderingExample },
+  { id: "reactive-children", title: "Reactive Children", icon: "🧩", component: reactiveChildrenExample },
   { id: "canvas", title: "Canvas Drawing", icon: "✏️", component: refExample },
 ];
 
@@ -382,8 +572,6 @@ const examples: Example[] = [
 // Header Component
 // ============================================
 function headerComponent() {
-  const sidebarOpen = signal(false);
-
   return header().className("top-header")(
     div().className("logo")(
       button()
@@ -398,7 +586,7 @@ function headerComponent() {
     ),
     div().className("header-links")(
       a()
-        .href("https://github.com/anthropics/elements-kit")
+        .href("https://github.com/waelbettayeb/elements-kit")
         .target("_blank")
         .textContent("GitHub"),
       a()

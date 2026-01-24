@@ -106,6 +106,7 @@ interface HTMLAnchorElementBuilder extends HTMLElementBuilder {
   charset(value: ReactiveValue<string>): this;
   coords(value: ReactiveValue<string>): this;
   download(value: ReactiveValue<string>): this;
+  href(value: ReactiveValue<string>): this;
   hreflang(value: ReactiveValue<string>): this;
   name(value: ReactiveValue<string>): this;
   ping(value: ReactiveValue<string>): this;

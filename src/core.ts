@@ -8,6 +8,59 @@ export const APPLY: unique symbol = Symbol("apply");
 export const EFFECT: unique symbol = Symbol("effect");
 export const ON: unique symbol = Symbol("on");
 
+// NOTE: typescript doens't allow to extract setter argument types directly
+// check: https://github.com/microsoft/TypeScript/issues/21759
+export type ReactiveValue<T> = (() => T) | T;
+
+/** Child types that can be appended to an element */
+type Child = ElementBuilder<any> | Element | DocumentFragment | string | number;
+
+/**
+ * The main reactive element interface.
+ * Property setters are defined in the specific builder interfaces in dom.ts.
+ */
+export interface ReactiveElement<T extends Element> {
+  /** Append children to the element, returns the raw DOM element */
+  (...children: ReactiveValue<Child>[]): T;
+
+  /** The underlying DOM element */
+  readonly [VALUE]: T;
+
+  /** Access the element reference for direct manipulation */
+  [REF](apply: (ref: T) => void | (() => void)): this;
+
+  /** Register a reactive effect */
+  [EFFECT](fn: () => void): this;
+
+  /** Add an event listener */
+  [ON]<K extends keyof HTMLElementEventMap>(
+    eventType: K,
+    listener: (this: T, ev: HTMLElementEventMap[K]) => any,
+    options?: boolean | AddEventListenerOptions,
+  ): this;
+  [ON](
+    eventType: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): this;
+
+  /** Dispose the element and cleanup all effects */
+  [DISPOSE](): void;
+
+  /** Style property for chaining */
+  style: CSSStyleSetters<this>;
+}
+
+/** CSS style properties as chainable setters */
+type CSSStyleSetters<R> = {
+  [K in keyof CSSStyleDeclaration as CSSStyleDeclaration[K] extends string
+    ? K
+    : never]: (value: ReactiveValue<string>) => R;
+};
+
+// Re-export conditional after types are defined
+export { when, show } from "./conditional";
+
 class ElementBuilder<T extends Element = Element> {
   /** The underlying DOM element */
   [VALUE]: T;
@@ -111,7 +164,7 @@ class ChainContext<T> {
     this.key = key;
   }
 
-  setter(value) {
+  setter(value: unknown) {
     if (isReactiveValue(value)) {
       this.builder[DISPOSABLES].add(
         effect(() => {
@@ -160,35 +213,3 @@ function isObject(v: unknown): v is Record<string | symbol, unknown> {
 export function reactive<T extends Element>(el: T) {
   return ElementBuilder.create(el);
 }
-
-export type ReactiveElement<T extends Element> = ElementBuilder<T> &
-  ReactiveBuilder<ElementBuilder<T>, T>;
-
-// NOTE: typescript doens't allow to extract setter argument types directly
-// check: https://github.com/microsoft/TypeScript/issues/21759
-export type ReactiveValue<T> = (() => T) | T;
-
-type ReactiveArray<T extends any[]> = {
-  [K in keyof T]: ReactiveValue<T[K]> | T[K];
-};
-
-/**
- * Filter keys that are writable (exclude readonly and getter-only).
- */
-type WritableKeys<T> = {
-  [K in keyof T]: (<U>() => U extends { [Q in K]: T[K] } ? 1 : 2) extends <
-    U,
-  >() => U extends { readonly [Q in K]: T[K] } ? 1 : 2
-    ? never
-    : K;
-}[keyof T];
-
-export type ReactiveBuilder<R, T = R> = T extends (...args: infer U) => unknown
-  ? (...value: ReactiveArray<U>) => ReactiveBuilder<R>
-  : {
-      (value?: ReactiveValue<T>): ReactiveBuilder<R>;
-    } & (T extends object
-      ? {
-          [K in WritableKeys<T>]: ReactiveBuilder<R, T[K]>;
-        }
-      : {});
