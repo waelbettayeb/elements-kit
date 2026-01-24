@@ -1,4 +1,4 @@
-import { signal } from "./signals";
+import { signal } from "@/signals";
 
 // URLPattern type declaration for browsers that support it
 declare class URLPattern {

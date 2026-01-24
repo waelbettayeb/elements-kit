@@ -37,13 +37,14 @@
     }
   },
   "scripts": {
-    "demo": "pnpx vite ./demo",
+    "demo": "vite ./demo",
     "build": "tsdown"
   },
   "packageManager": "pnpm@10.26.2",
   "devDependencies": {
     "tsdown": "0.19.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
   },
   "dependencies": {
     "alien-signals": "^3.1.2"

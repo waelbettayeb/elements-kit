@@ -6,6 +6,10 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "emitDeclarationOnly": true,
-    "declaration": true
+    "declaration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   }
 }

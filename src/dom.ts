@@ -1,6 +1,6 @@
 // Auto-generated file
 
-import { reactive, ReactiveElement, ReactiveValue } from "./core";
+import { reactive, ReactiveElement, ReactiveValue } from "@/core";
 
 interface EventTargetBuilder {}
 

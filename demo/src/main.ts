@@ -1,6 +1,6 @@
-import { computed, signal } from "../../src/signals";
-import { div, span, button, h1, h2, p, input, pre, code, header, canvas, nav, a, ul, li } from "../../src/dom";
-import { REF, ON, VALUE, when, show, each, createContext, provide, inject, updateContext, asyncSignal, CLASSES, ATTR, pathname, windowSize, mediaQuery, onlineStatus } from "../../src/core";
+import { computed, signal } from "@/signals";
+import { div, span, button, h1, h2, p, input, pre, code, header, canvas, nav, a, ul, li } from "@/dom";
+import { REF, ON, VALUE, when, show, each, createContext, provide, inject, updateContext, asyncSignal, CLASSES, ATTR, pathname, windowSize, mediaQuery, onlineStatus } from "@/core";
 
 // ============================================
 // Example Registry

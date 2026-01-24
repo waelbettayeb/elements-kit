@@ -1,5 +1,5 @@
-import { effect } from "./signals";
-import { DISPOSE, VALUE, type ReactiveElement } from "./core";
+import { effect } from "@/signals";
+import { DISPOSE, VALUE, type ReactiveElement } from "@/core";
 
 type Child = ReactiveElement<Element> | Element | DocumentFragment | string | number;
 

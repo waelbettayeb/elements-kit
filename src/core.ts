@@ -1,4 +1,4 @@
-import { effect, isReactiveValue } from "./signals";
+import { effect, isReactiveValue } from "@/signals";
 
 export const DISPOSABLES: unique symbol = Symbol("disposables");
 export const DISPOSE: unique symbol = Symbol("dispose");
@@ -87,19 +87,19 @@ type CSSStyleSetters<R> = {
 };
 
 // Re-export conditional after types are defined
-export { when, show, each } from "./conditional";
+export { when, show, each } from "@/conditional";
 
 // Re-export context API
-export { createContext, provide, inject, updateContext, type Context } from "./context";
+export { createContext, provide, inject, updateContext, type Context } from "@/context";
 
 // Re-export async signals
-export { asyncSignal, asyncComputed, resource, type AsyncSignal, type AsyncState } from "./async";
+export { asyncSignal, asyncComputed, resource, type AsyncSignal, type AsyncState } from "@/async";
 
 // Re-export router
-export { navigate, pathname, searchParams, hash, param, createRoute, createRouter, link, type RouteMatch } from "./router";
+export { navigate, pathname, searchParams, hash, param, createRoute, createRouter, link, type RouteMatch } from "@/router";
 
 // Re-export document utilities
-export { cookie, delegate, documentTitle, windowScroll, windowSize, mediaQuery, onlineStatus, type ReactiveCookie, type CookieOptions } from "./document";
+export { cookie, delegate, documentTitle, windowScroll, windowSize, mediaQuery, onlineStatus, type ReactiveCookie, type CookieOptions } from "@/document";
 
 class ElementBuilder<T extends Element = Element> {
   /** The underlying DOM element */

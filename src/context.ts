@@ -1,5 +1,8 @@
-import { signal, type Signal } from "./signals";
-import { VALUE, DISPOSE, DISPOSABLES, type ReactiveElement } from "./core";
+import { signal } from "@/signals";
+import { VALUE, DISPOSABLES, type ReactiveElement } from "@/core";
+
+// Signal setter type
+type SignalSetter<T> = ((value?: T) => T) & ((value: T) => T);
 
 /**
  * A context object that can be provided and injected.
@@ -33,7 +36,7 @@ export function createContext<T>(defaultValue: T): Context<T> {
 }
 
 // Internal context storage - maps context IDs to their value stacks
-const contextStacks = new Map<symbol, Signal<unknown>[]>();
+const contextStacks = new Map<symbol, SignalSetter<unknown>[]>();
 
 /**
  * Provide a context value for a subtree of elements.
@@ -61,7 +64,7 @@ export function provide<T, E extends Element>(
   }
 
   // Create a signal for this context value
-  const valueSignal = signal(value) as Signal<unknown>;
+  const valueSignal = signal(value) as SignalSetter<unknown>;
   stack.push(valueSignal);
 
   // Get the raw element
@@ -122,7 +125,7 @@ export function updateContext<T>(context: Context<T>, value: T): void {
   const stack = contextStacks.get(context.id);
   if (stack && stack.length > 0) {
     // Update the most recent provider
-    const topSignal = stack[stack.length - 1] as Signal<T>;
+    const topSignal = stack[stack.length - 1] as SignalSetter<T>;
     topSignal(value);
   }
 }

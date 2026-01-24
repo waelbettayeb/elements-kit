@@ -1,4 +1,4 @@
-import { signal, effect } from "./signals";
+import { signal, effect } from "@/signals";
 
 /**
  * Reactive cookie access
