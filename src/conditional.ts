@@ -117,20 +117,27 @@ export function show<T extends Element>(
   condition: () => boolean,
   element: ReactiveElement<T> | T
 ): ReactiveElement<T> | T {
-  const el = (element[VALUE] ?? element) as HTMLElement;
-  const originalDisplay = el.style.display;
+  const el = (element[VALUE] ?? element) as T;
+
+  // Check if the element has a style property (HTMLElement or SVGElement)
+  if (!("style" in el)) {
+    return element;
+  }
+
+  const styledEl = el as unknown as { style: CSSStyleDeclaration };
+  const originalDisplay = styledEl.style.display;
 
   // Set initial visibility
   if (!condition()) {
-    el.style.display = "none";
+    styledEl.style.display = "none";
   }
 
   // Set up reactive effect
   effect(() => {
     if (condition()) {
-      el.style.display = originalDisplay;
+      styledEl.style.display = originalDisplay;
     } else {
-      el.style.display = "none";
+      styledEl.style.display = "none";
     }
   });
 

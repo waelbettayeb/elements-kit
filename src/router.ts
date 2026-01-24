@@ -9,19 +9,41 @@ declare class URLPattern {
 /**
  * Reactive URL signal that tracks the current location
  */
-const currentUrl = signal(new URL(window.location.href));
+const currentUrl = signal(
+  typeof window !== "undefined"
+    ? new URL(window.location.href)
+    : new URL("http://localhost/")
+);
+
+// Store cleanup function for popstate listener
+let popstateCleanup: (() => void) | null = null;
 
 // Listen for navigation events
 if (typeof window !== "undefined") {
-  window.addEventListener("popstate", () => {
+  const handlePopstate = () => {
     currentUrl(new URL(window.location.href));
-  });
+  };
+  window.addEventListener("popstate", handlePopstate);
+  popstateCleanup = () => window.removeEventListener("popstate", handlePopstate);
+}
+
+/**
+ * Cleanup the router's global event listeners.
+ * Call this when you no longer need the router (e.g., in tests or when unmounting).
+ */
+export function disposeRouter(): void {
+  if (popstateCleanup) {
+    popstateCleanup();
+    popstateCleanup = null;
+  }
 }
 
 /**
  * Navigate to a new URL programmatically
  */
 export function navigate(url: string | URL, options?: { replace?: boolean }): void {
+  if (typeof window === "undefined") return;
+
   const newUrl = typeof url === "string" ? new URL(url, window.location.origin) : url;
 
   if (options?.replace) {
@@ -94,10 +116,16 @@ export function createRoute(pattern: string): {
   /** Get the full match result */
   match: () => RouteMatch;
 } {
-  // Create URLPattern if available, otherwise use regex fallback
-  const urlPattern = typeof URLPattern !== "undefined"
-    ? new URLPattern({ pathname: pattern })
-    : null;
+  // Create URLPattern if available, with error handling for invalid patterns
+  let urlPattern: URLPattern | null = null;
+  if (typeof URLPattern !== "undefined") {
+    try {
+      urlPattern = new URLPattern({ pathname: pattern });
+    } catch {
+      // Invalid pattern, fall back to regex matching
+      urlPattern = null;
+    }
+  }
 
   const getMatch = (): RouteMatch => {
     const url = currentUrl();
@@ -213,11 +241,33 @@ export function createRouter<T extends Record<string, string>>(routes: T): {
     },
     go: (routeName: keyof T, params?: Record<string, string>) => {
       let path: string = routes[routeName];
-      if (params) {
+
+      // Extract required params from the route pattern
+      const requiredParams = (path.match(/:[a-zA-Z]+/g) || []).map((p: string) => p.slice(1));
+
+      if (requiredParams.length > 0) {
+        if (!params) {
+          console.warn(
+            `[Router] Route "${String(routeName)}" requires params: ${requiredParams.join(", ")}`
+          );
+          return;
+        }
+
+        // Check all required params are provided
+        const missingParams = requiredParams.filter((p) => !(p in params));
+        if (missingParams.length > 0) {
+          console.warn(
+            `[Router] Missing required params for route "${String(routeName)}": ${missingParams.join(", ")}`
+          );
+          return;
+        }
+
+        // Replace params in path
         for (const key in params) {
-          path = path.replace(`:${key}`, params[key]);
+          path = path.replace(`:${key}`, encodeURIComponent(params[key]));
         }
       }
+
       navigate(path);
     },
   };

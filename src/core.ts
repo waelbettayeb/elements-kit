@@ -37,7 +37,7 @@ export interface ReactiveElement<T extends Element> {
   /** Add an event listener */
   [ON]<K extends keyof HTMLElementEventMap>(
     eventType: K,
-    listener: (this: T, ev: HTMLElementEventMap[K]) => any,
+    listener: (this: T, ev: HTMLElementEventMap[K]) => void,
     options?: boolean | AddEventListenerOptions,
   ): this;
   [ON](
@@ -96,7 +96,7 @@ export { createContext, provide, inject, updateContext, type Context } from "@/c
 export { asyncSignal, asyncComputed, resource, type AsyncSignal, type AsyncState } from "@/async";
 
 // Re-export router
-export { navigate, pathname, searchParams, hash, param, createRoute, createRouter, link, type RouteMatch } from "@/router";
+export { navigate, pathname, searchParams, hash, param, createRoute, createRouter, link, disposeRouter, type RouteMatch } from "@/router";
 
 // Re-export document utilities
 export { cookie, delegate, documentTitle, windowScroll, windowSize, mediaQuery, onlineStatus, type ReactiveCookie, type CookieOptions } from "@/document";
@@ -145,7 +145,6 @@ class ElementBuilder<T extends Element = Element> {
         const markerStart = document.createComment("{");
         const markerEnd = document.createComment("}");
         const value = toNode(child());
-        console.log("ADDING REACTIVE CHILD", value);
         el.appendChild(markerStart);
         el.appendChild(value);
         el.appendChild(markerEnd);
