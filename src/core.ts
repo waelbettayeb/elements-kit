@@ -7,6 +7,8 @@ export const REF: unique symbol = Symbol("ref");
 export const APPLY: unique symbol = Symbol("apply");
 export const EFFECT: unique symbol = Symbol("effect");
 export const ON: unique symbol = Symbol("on");
+export const CLASSES: unique symbol = Symbol("classes");
+export const ATTR: unique symbol = Symbol("attr");
 
 // NOTE: typescript doens't allow to extract setter argument types directly
 // check: https://github.com/microsoft/TypeScript/issues/21759
@@ -47,9 +49,35 @@ export interface ReactiveElement<T extends Element> {
   /** Dispose the element and cleanup all effects */
   [DISPOSE](): void;
 
+  /** Add/remove/toggle CSS classes reactively */
+  [CLASSES]: ClassListHelper<this>;
+
+  /** Set/get attributes reactively */
+  [ATTR](name: string, value?: ReactiveValue<string | boolean | null>): this;
+
   /** Style property for chaining */
   style: CSSStyleSetters<this>;
 }
+
+/** Helper for classList manipulation */
+interface ClassListHelper<R> {
+  /** Add one or more classes */
+  add(...classes: ReactiveValue<string>[]): R;
+  /** Remove one or more classes */
+  remove(...classes: ReactiveValue<string>[]): R;
+  /** Toggle a class based on condition */
+  toggle(className: string, condition?: ReactiveValue<boolean>): R;
+  /** Set classes from an object { className: condition } */
+  set(classMap: Record<string, ReactiveValue<boolean>>): R;
+}
+
+/** Internal classList helper type for ElementBuilder */
+type ClassListHelperImpl<T extends Element> = {
+  add(...classes: ReactiveValue<string>[]): ElementBuilder<T>;
+  remove(...classes: ReactiveValue<string>[]): ElementBuilder<T>;
+  toggle(className: string, condition?: ReactiveValue<boolean>): ElementBuilder<T>;
+  set(classMap: Record<string, ReactiveValue<boolean>>): ElementBuilder<T>;
+};
 
 /** CSS style properties as chainable setters */
 type CSSStyleSetters<R> = {
@@ -63,6 +91,9 @@ export { when, show, each } from "./conditional";
 
 // Re-export context API
 export { createContext, provide, inject, updateContext, type Context } from "./context";
+
+// Re-export async signals
+export { asyncSignal, asyncComputed, resource, type AsyncSignal, type AsyncState } from "./async";
 
 class ElementBuilder<T extends Element = Element> {
   /** The underlying DOM element */
@@ -153,6 +184,113 @@ class ElementBuilder<T extends Element = Element> {
     this[DISPOSABLES].add(() => {
       this[VALUE].removeEventListener(eventType, listener, options);
     });
+    return this;
+  }
+
+  get [CLASSES](): ClassListHelperImpl<T> {
+    const el = this[VALUE];
+    const builder = this;
+
+    return {
+      add(...classes: ReactiveValue<string>[]): ElementBuilder<T> {
+        classes.forEach((cls) => {
+          if (isReactiveValue(cls)) {
+            let prevClass = "";
+            builder[DISPOSABLES].add(
+              effect(() => {
+                const newClass = cls();
+                if (prevClass) el.classList.remove(prevClass);
+                if (newClass) el.classList.add(newClass);
+                prevClass = newClass;
+              })
+            );
+          } else if (cls) {
+            el.classList.add(cls);
+          }
+        });
+        return builder;
+      },
+
+      remove(...classes: ReactiveValue<string>[]): ElementBuilder<T> {
+        classes.forEach((cls) => {
+          if (isReactiveValue(cls)) {
+            builder[DISPOSABLES].add(
+              effect(() => {
+                const className = cls();
+                if (className) el.classList.remove(className);
+              })
+            );
+          } else if (cls) {
+            el.classList.remove(cls);
+          }
+        });
+        return builder;
+      },
+
+      toggle(className: string, condition?: ReactiveValue<boolean>): ElementBuilder<T> {
+        if (condition === undefined) {
+          el.classList.toggle(className);
+        } else if (isReactiveValue(condition)) {
+          builder[DISPOSABLES].add(
+            effect(() => {
+              el.classList.toggle(className, condition());
+            })
+          );
+        } else {
+          el.classList.toggle(className, condition);
+        }
+        return builder;
+      },
+
+      set(classMap: Record<string, ReactiveValue<boolean>>): ElementBuilder<T> {
+        for (const className in classMap) {
+          const condition = classMap[className];
+          if (isReactiveValue(condition)) {
+            builder[DISPOSABLES].add(
+              effect(() => {
+                el.classList.toggle(className, condition());
+              })
+            );
+          } else {
+            el.classList.toggle(className, condition);
+          }
+        }
+        return builder;
+      },
+    };
+  }
+
+  [ATTR](name: string, value?: ReactiveValue<string | boolean | null>) {
+    const el = this[VALUE];
+
+    if (value === undefined) {
+      // Getter mode - just return for chaining
+      return this;
+    }
+
+    if (isReactiveValue(value)) {
+      this[DISPOSABLES].add(
+        effect(() => {
+          const v = value();
+          if (v === null || v === false) {
+            el.removeAttribute(name);
+          } else if (v === true) {
+            el.setAttribute(name, "");
+          } else {
+            el.setAttribute(name, v);
+          }
+        })
+      );
+    } else {
+      if (value === null || value === false) {
+        el.removeAttribute(name);
+      } else if (value === true) {
+        el.setAttribute(name, "");
+      } else {
+        el.setAttribute(name, value);
+      }
+    }
+
     return this;
   }
 }

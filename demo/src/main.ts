@@ -1,6 +1,6 @@
 import { computed, signal } from "../../src/signals";
 import { div, span, button, h1, h2, p, input, pre, code, header, canvas, nav, a, ul, li } from "../../src/dom";
-import { REF, ON, VALUE, when, show, each, createContext, provide, inject, updateContext } from "../../src/core";
+import { REF, ON, VALUE, when, show, each, createContext, provide, inject, updateContext, asyncSignal, CLASSES, ATTR } from "../../src/core";
 
 // ============================================
 // Example Registry
@@ -796,6 +796,238 @@ button()[ON]("click", () => updateContext(ThemeContext, "light"));`)
 }
 
 // ============================================
+// Example 11: Async Signals
+// ============================================
+function asyncExample() {
+  // Simulated API call
+  const fetchUser = () => new Promise<{ name: string; email: string }>((resolve) => {
+    setTimeout(() => {
+      resolve({ name: "John Doe", email: "john@example.com" });
+    }, 1500);
+  });
+
+  const user = asyncSignal(fetchUser);
+
+  // Simulated API with random failure
+  const fetchData = () => new Promise<string>((resolve, reject) => {
+    setTimeout(() => {
+      if (Math.random() > 0.5) {
+        resolve("Data loaded successfully!");
+      } else {
+        reject(new Error("Network error - try again"));
+      }
+    }, 1000);
+  });
+
+  const data = asyncSignal(fetchData, { immediate: false });
+
+  return div().className("example-card")(
+    h2()("Async Signals"),
+    p().className("description")("Handle async data fetching with built-in loading and error states."),
+    div().className("demo-area")(
+      div()
+        .style.display("flex")
+        .style.flexDirection("column")
+        .style.gap("24px")(
+          // User fetch example
+          div()(
+            div()
+              .style.marginBottom("12px")
+              .style.fontWeight("bold")("Auto-fetch on mount"),
+            when(
+              () => user.loading(),
+              () => div()
+                .style.padding("16px")
+                .style.background("rgba(59, 130, 246, 0.1)")
+                .style.borderRadius("8px")
+                .style.display("flex")
+                .style.alignItems("center")
+                .style.gap("12px")(
+                  span().style.opacity("0.7")("Loading user...")
+                ),
+              () => div()
+                .style.padding("16px")
+                .style.background("rgba(34, 197, 94, 0.1)")
+                .style.border("1px solid rgba(34, 197, 94, 0.3)")
+                .style.borderRadius("8px")(
+                  div().style.fontWeight("bold")(computed(() => user()?.name ?? "")),
+                  div().style.opacity("0.7").style.fontSize("0.875rem")(
+                    computed(() => user()?.email ?? "")
+                  )
+                )
+            )
+          ),
+          // Manual fetch with error handling
+          div()(
+            div()
+              .style.marginBottom("12px")
+              .style.fontWeight("bold")("Manual fetch with error handling"),
+            div()
+              .style.display("flex")
+              .style.flexDirection("column")
+              .style.gap("12px")(
+                button()
+                  .textContent(computed(() => data.loading() ? "Loading..." : "Fetch Data (50% fail rate)"))
+                  .disabled(computed(() => data.loading()))
+                  [ON]("click", () => data.refetch().catch(() => {})),
+                when(
+                  () => data.error() !== undefined,
+                  () => div()
+                    .style.padding("12px")
+                    .style.background("rgba(239, 68, 68, 0.1)")
+                    .style.border("1px solid rgba(239, 68, 68, 0.3)")
+                    .style.borderRadius("8px")
+                    .style.color("#ef4444")(
+                      computed(() => data.error()?.message ?? "")
+                    ),
+                  () => when(
+                    () => data() !== undefined,
+                    () => div()
+                      .style.padding("12px")
+                      .style.background("rgba(34, 197, 94, 0.1)")
+                      .style.border("1px solid rgba(34, 197, 94, 0.3)")
+                      .style.borderRadius("8px")
+                      .style.color("#22c55e")(
+                        computed(() => data() ?? "")
+                      ),
+                    () => div()
+                      .style.padding("12px")
+                      .style.background("rgba(100, 100, 100, 0.1)")
+                      .style.borderRadius("8px")
+                      .style.opacity("0.6")(
+                        "Click the button to fetch data"
+                      )
+                  )
+                )
+              )
+          )
+        )
+    ),
+    pre().className("code-block")(
+      code()(`// Create async signal - fetches immediately
+const user = asyncSignal(() =>
+  fetch('/api/user').then(r => r.json())
+);
+
+// Access data and states
+user();           // data or undefined
+user.loading();   // boolean
+user.error();     // Error or undefined
+user.refetch();   // refetch data
+
+// Defer fetching
+const data = asyncSignal(fetchFn, { immediate: false });
+data.refetch(); // manually trigger
+
+// Use with conditional rendering
+when(
+  () => user.loading(),
+  () => span()("Loading..."),
+  () => span()(user()?.name)
+);`)
+    )
+  );
+}
+
+// ============================================
+// Example 12: Classes & Attributes
+// ============================================
+function classesExample() {
+  const isActive = signal(false);
+  const isHighlighted = signal(false);
+  const size = signal<"small" | "medium" | "large">("medium");
+  const disabled = signal(false);
+
+  return div().className("example-card")(
+    h2()("Classes & Attributes"),
+    p().className("description")("Reactively add/remove classes and set attributes with [CLASSES] and [ATTR]."),
+    // Add some CSS for the demo
+    div()
+      [REF]((el) => {
+        const style = document.createElement("style");
+        style.textContent = `
+          .demo-box { padding: 20px; border-radius: 8px; transition: all 0.3s; background: #2a2a2a; }
+          .demo-box.active { background: rgba(59, 130, 246, 0.3); border: 2px solid #3b82f6; }
+          .demo-box.highlighted { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+          .demo-box.small { padding: 10px; font-size: 0.8rem; }
+          .demo-box.medium { padding: 20px; font-size: 1rem; }
+          .demo-box.large { padding: 30px; font-size: 1.2rem; }
+        `;
+        el.appendChild(style);
+      }),
+    div().className("demo-area")(
+      div()
+        .style.display("flex")
+        .style.flexDirection("column")
+        .style.gap("16px")(
+          // Controls
+          div()
+            .style.display("flex")
+            .style.flexWrap("wrap")
+            .style.gap("8px")(
+              button()
+                .textContent(computed(() => isActive() ? "Deactivate" : "Activate"))
+                [ON]("click", () => isActive(!isActive())),
+              button()
+                .textContent(computed(() => isHighlighted() ? "Remove Highlight" : "Add Highlight"))
+                [ON]("click", () => isHighlighted(!isHighlighted())),
+              button()
+                .textContent("Small")
+                [ON]("click", () => size("small")),
+              button()
+                .textContent("Medium")
+                [ON]("click", () => size("medium")),
+              button()
+                .textContent("Large")
+                [ON]("click", () => size("large")),
+              button()
+                .textContent(computed(() => disabled() ? "Enable" : "Disable"))
+                [ON]("click", () => disabled(!disabled()))
+            ),
+          // Demo box with reactive classes
+          div()
+            .className("demo-box")
+            [CLASSES].toggle("active", () => isActive())
+            [CLASSES].toggle("highlighted", () => isHighlighted())
+            [CLASSES].add(computed(() => size()))
+            [ATTR]("data-state", computed(() => isActive() ? "active" : "inactive"))
+            [ATTR]("aria-disabled", computed(() => disabled()))(
+              "This box has reactive classes!",
+              div()
+                .style.marginTop("8px")
+                .style.fontSize("0.875rem")
+                .style.opacity("0.7")(
+                  "Classes: demo-box ",
+                  computed(() => isActive() ? "active " : ""),
+                  computed(() => isHighlighted() ? "highlighted " : ""),
+                  computed(() => size())
+                )
+            )
+        )
+    ),
+    pre().className("code-block")(
+      code()(`const isActive = signal(false);
+const size = signal("medium");
+
+div()
+  .className("box")
+  [CLASSES].toggle("active", () => isActive())
+  [CLASSES].add(computed(() => size()))
+  [ATTR]("data-state", computed(() =>
+    isActive() ? "active" : "inactive"
+  ))
+  [ATTR]("aria-disabled", computed(() => disabled()));
+
+// Available methods:
+// [CLASSES].add(...classes)
+// [CLASSES].remove(...classes)
+// [CLASSES].toggle(name, condition?)
+// [CLASSES].set({ className: condition })`)
+    )
+  );
+}
+
+// ============================================
 // Example Registry
 // ============================================
 const examples: Example[] = [
@@ -808,6 +1040,8 @@ const examples: Example[] = [
   { id: "reactive-children", title: "Reactive Children", icon: "🧩", component: reactiveChildrenExample },
   { id: "list-rendering", title: "List Rendering", icon: "📋", component: listRenderingExample },
   { id: "context", title: "Context API", icon: "🔄", component: contextExample },
+  { id: "classes", title: "Classes & Attrs", icon: "🏷️", component: classesExample },
+  { id: "async", title: "Async Signals", icon: "🌐", component: asyncExample },
   { id: "canvas", title: "Canvas Drawing", icon: "✏️", component: refExample },
 ];
 

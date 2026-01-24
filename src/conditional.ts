@@ -1,7 +1,7 @@
 import { effect } from "./signals";
 import { DISPOSE, VALUE, type ReactiveElement } from "./core";
 
-type Child = ReactiveElement<Element> | Element | string | number;
+type Child = ReactiveElement<Element> | Element | DocumentFragment | string | number;
 
 /**
  * Convert a child value to a DOM node
