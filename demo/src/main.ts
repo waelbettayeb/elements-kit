@@ -1,6 +1,6 @@
 import { computed, signal } from "../../src/signals";
 import { div, span, button, h1, h2, p, input, pre, code, header, canvas, nav, a, ul, li } from "../../src/dom";
-import { REF, ON, VALUE, when, show, each, createContext, provide, inject, updateContext, asyncSignal, CLASSES, ATTR } from "../../src/core";
+import { REF, ON, VALUE, when, show, each, createContext, provide, inject, updateContext, asyncSignal, CLASSES, ATTR, pathname, windowSize, mediaQuery, onlineStatus } from "../../src/core";
 
 // ============================================
 // Example Registry
@@ -1028,6 +1028,271 @@ div()
 }
 
 // ============================================
+// Example 13: Router
+// ============================================
+function routerExample() {
+  // Simulated current route for demo (since we can't actually change URL in iframe)
+  const demoPath = signal("/");
+
+  const simulateNavigation = (path: string) => {
+    demoPath(path);
+  };
+
+  return div().className("example-card")(
+    h2()("Router"),
+    p().className("description")("Client-side routing with URLPattern API and reactive path matching."),
+    div().className("demo-area")(
+      div()
+        .style.display("flex")
+        .style.flexDirection("column")
+        .style.gap("16px")(
+          // Navigation buttons
+          div()(
+            div()
+              .style.marginBottom("8px")
+              .style.fontWeight("bold")("Simulated Navigation"),
+            div()
+              .style.display("flex")
+              .style.flexWrap("wrap")
+              .style.gap("8px")(
+                button()
+                  .textContent("Home (/)")
+                  [ON]("click", () => simulateNavigation("/")),
+                button()
+                  .textContent("Users (/users)")
+                  [ON]("click", () => simulateNavigation("/users")),
+                button()
+                  .textContent("User 123 (/users/123)")
+                  [ON]("click", () => simulateNavigation("/users/123")),
+                button()
+                  .textContent("Settings (/settings)")
+                  [ON]("click", () => simulateNavigation("/settings"))
+              )
+          ),
+          // Current path display
+          div()
+            .style.padding("16px")
+            .style.background("rgba(59, 130, 246, 0.1)")
+            .style.borderRadius("8px")
+            .style.border("1px solid rgba(59, 130, 246, 0.3)")(
+              div()
+                .style.marginBottom("8px")(
+                  "Current path: ",
+                  span()
+                    .style.fontWeight("bold")
+                    .style.fontFamily("monospace")
+                    .textContent(computed(() => demoPath()))
+                ),
+              div()
+                .style.marginBottom("8px")(
+                  "Actual pathname(): ",
+                  span()
+                    .style.fontFamily("monospace")
+                    .style.opacity("0.7")
+                    .textContent(computed(() => pathname()))
+                )
+            ),
+          // Route matching demo
+          div()(
+            div()
+              .style.marginBottom("8px")
+              .style.fontWeight("bold")("Route Matching"),
+            div()
+              .style.display("flex")
+              .style.flexDirection("column")
+              .style.gap("8px")(
+                ...["/", "/users", "/users/:id", "/settings"].map(pattern => {
+                  return div()
+                    .style.padding("8px 12px")
+                    .style.background("rgba(100, 100, 100, 0.1)")
+                    .style.borderRadius("4px")
+                    .style.fontFamily("monospace")
+                    .style.fontSize("0.875rem")(
+                      span().style.opacity("0.6")(`"${pattern}"`),
+                      " → ",
+                      span()
+                        .style.color(computed(() => {
+                          // Manually check if demo path matches
+                          if (pattern === "/") return demoPath() === "/" ? "#22c55e" : "#888";
+                          if (pattern === "/users") return demoPath() === "/users" ? "#22c55e" : "#888";
+                          if (pattern === "/users/:id") return demoPath().startsWith("/users/") && demoPath() !== "/users" ? "#22c55e" : "#888";
+                          if (pattern === "/settings") return demoPath() === "/settings" ? "#22c55e" : "#888";
+                          return "#888";
+                        }))
+                        .textContent(computed(() => {
+                          if (pattern === "/") return demoPath() === "/" ? "matched" : "no match";
+                          if (pattern === "/users") return demoPath() === "/users" ? "matched" : "no match";
+                          if (pattern === "/users/:id") {
+                            if (demoPath().startsWith("/users/") && demoPath() !== "/users") {
+                              const id = demoPath().split("/")[2];
+                              return `matched { id: "${id}" }`;
+                            }
+                            return "no match";
+                          }
+                          if (pattern === "/settings") return demoPath() === "/settings" ? "matched" : "no match";
+                          return "no match";
+                        }))
+                    );
+                })
+              )
+          )
+        )
+    ),
+    pre().className("code-block")(
+      code()(`// Create a router with named routes
+const router = createRouter({
+  home: "/",
+  users: "/users",
+  user: "/users/:id",
+});
+
+// Check current route
+router.current();     // "home" | "users" | "user" | null
+router.params();      // { id: "123" }
+router.isActive("user"); // boolean
+
+// Navigate programmatically
+navigate("/users/456");
+router.go("user", { id: "789" });
+
+// Use in components
+when(
+  () => router.isActive("home"),
+  () => HomePage(),
+  () => when(
+    () => router.isActive("user"),
+    () => UserPage(router.params().id)
+  )
+);`)
+    )
+  );
+}
+
+// ============================================
+// Example 14: Document Utilities
+// ============================================
+function documentExample() {
+  const viewport = windowSize();
+  const isMobile = mediaQuery("(max-width: 768px)");
+  const prefersDark = mediaQuery("(prefers-color-scheme: dark)");
+  const online = onlineStatus();
+
+  return div().className("example-card")(
+    h2()("Document Utilities"),
+    p().className("description")("Reactive document-level APIs: viewport size, media queries, online status."),
+    div().className("demo-area")(
+      div()
+        .style.display("flex")
+        .style.flexDirection("column")
+        .style.gap("16px")(
+          // Viewport size
+          div()
+            .style.padding("16px")
+            .style.background("rgba(59, 130, 246, 0.1)")
+            .style.borderRadius("8px")
+            .style.border("1px solid rgba(59, 130, 246, 0.3)")(
+              div()
+                .style.fontWeight("bold")
+                .style.marginBottom("8px")("Viewport Size"),
+              div()(
+                "Width: ",
+                span()
+                  .style.fontFamily("monospace")
+                  .textContent(computed(() => `${viewport.width()}px`)),
+                " | Height: ",
+                span()
+                  .style.fontFamily("monospace")
+                  .textContent(computed(() => `${viewport.height()}px`))
+              )
+            ),
+          // Media queries
+          div()
+            .style.padding("16px")
+            .style.background("rgba(34, 197, 94, 0.1)")
+            .style.borderRadius("8px")
+            .style.border("1px solid rgba(34, 197, 94, 0.3)")(
+              div()
+                .style.fontWeight("bold")
+                .style.marginBottom("8px")("Media Queries"),
+              div()
+                .style.display("flex")
+                .style.flexDirection("column")
+                .style.gap("4px")(
+                  div()(
+                    "Mobile (max-width: 768px): ",
+                    span()
+                      .style.fontWeight("bold")
+                      .style.color(computed(() => isMobile() ? "#22c55e" : "#888"))
+                      .textContent(computed(() => isMobile() ? "Yes" : "No"))
+                  ),
+                  div()(
+                    "Prefers Dark Mode: ",
+                    span()
+                      .style.fontWeight("bold")
+                      .style.color(computed(() => prefersDark() ? "#22c55e" : "#888"))
+                      .textContent(computed(() => prefersDark() ? "Yes" : "No"))
+                  )
+                )
+            ),
+          // Online status
+          div()
+            .style.padding("16px")
+            .style.background(computed(() =>
+              online() ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)"
+            ))
+            .style.borderRadius("8px")
+            .style.border(computed(() =>
+              online() ? "1px solid rgba(34, 197, 94, 0.3)" : "1px solid rgba(239, 68, 68, 0.3)"
+            ))(
+              div()
+                .style.fontWeight("bold")
+                .style.marginBottom("8px")("Online Status"),
+              div()(
+                "Status: ",
+                span()
+                  .style.fontWeight("bold")
+                  .style.color(computed(() => online() ? "#22c55e" : "#ef4444"))
+                  .textContent(computed(() => online() ? "Online" : "Offline"))
+              ),
+              p()
+                .style.fontSize("0.875rem")
+                .style.opacity("0.7")
+                .style.margin("8px 0 0 0")(
+                  "Try disconnecting your network to see this change!"
+                )
+            )
+        )
+    ),
+    pre().className("code-block")(
+      code()(`// Reactive viewport size
+const viewport = windowSize();
+div().style.padding(computed(() =>
+  viewport.width() < 768 ? "10px" : "20px"
+));
+
+// Media query matching
+const isMobile = mediaQuery("(max-width: 768px)");
+const prefersDark = mediaQuery("(prefers-color-scheme: dark)");
+
+// Online/offline detection
+const online = onlineStatus();
+when(
+  () => !online(),
+  () => div()("You are offline")
+);
+
+// Reactive cookies
+const theme = cookie("theme");
+theme.set("dark", { expires: 365 });
+
+// Document title
+const title = documentTitle();
+title(\`\${count()} notifications\`);`)
+    )
+  );
+}
+
+// ============================================
 // Example Registry
 // ============================================
 const examples: Example[] = [
@@ -1042,6 +1307,8 @@ const examples: Example[] = [
   { id: "context", title: "Context API", icon: "🔄", component: contextExample },
   { id: "classes", title: "Classes & Attrs", icon: "🏷️", component: classesExample },
   { id: "async", title: "Async Signals", icon: "🌐", component: asyncExample },
+  { id: "router", title: "Router", icon: "🧭", component: routerExample },
+  { id: "document", title: "Document Utils", icon: "📄", component: documentExample },
   { id: "canvas", title: "Canvas Drawing", icon: "✏️", component: refExample },
 ];
 

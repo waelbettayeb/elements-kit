@@ -95,6 +95,12 @@ export { createContext, provide, inject, updateContext, type Context } from "./c
 // Re-export async signals
 export { asyncSignal, asyncComputed, resource, type AsyncSignal, type AsyncState } from "./async";
 
+// Re-export router
+export { navigate, pathname, searchParams, hash, param, createRoute, createRouter, link, type RouteMatch } from "./router";
+
+// Re-export document utilities
+export { cookie, delegate, documentTitle, windowScroll, windowSize, mediaQuery, onlineStatus, type ReactiveCookie, type CookieOptions } from "./document";
+
 class ElementBuilder<T extends Element = Element> {
   /** The underlying DOM element */
   [VALUE]: T;
