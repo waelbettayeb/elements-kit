@@ -3,7 +3,308 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Adam x Aliens</title>
+    <title>ElementsKit - Demo</title>
+    <style>
+      :root {
+        --bg-primary: #0f0f0f;
+        --bg-secondary: #1a1a1a;
+        --bg-tertiary: #252525;
+        --border-color: #333;
+        --text-primary: #e5e5e5;
+        --text-secondary: #888;
+        --accent: #3b82f6;
+        --accent-hover: #2563eb;
+        --header-height: 56px;
+        --sidebar-width: 220px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+        background: var(--bg-primary);
+        min-height: 100vh;
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      #app {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      /* Fixed Header */
+      .top-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--header-height);
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        z-index: 100;
+      }
+
+      .top-header .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .top-header .logo h1 {
+        font-size: 1.25rem;
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      .top-header .logo-icon {
+        width: 28px;
+        height: 28px;
+        background: var(--accent);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #fff;
+        font-size: 0.9rem;
+      }
+
+      .top-header .header-links {
+        display: flex;
+        gap: 8px;
+      }
+
+      .top-header .header-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        padding: 6px 12px;
+        border-radius: 4px;
+        transition: color 0.15s, background 0.15s;
+      }
+
+      .top-header .header-links a:hover {
+        color: var(--text-primary);
+        background: var(--bg-tertiary);
+      }
+
+      /* Layout Container */
+      .layout {
+        display: flex;
+        margin-top: var(--header-height);
+        min-height: calc(100vh - var(--header-height));
+      }
+
+      /* Sidebar */
+      .sidebar {
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        width: var(--sidebar-width);
+        height: calc(100vh - var(--header-height));
+        background: var(--bg-secondary);
+        border-right: 1px solid var(--border-color);
+        padding: 16px 0;
+        overflow-y: auto;
+      }
+
+      .sidebar-title {
+        color: var(--text-secondary);
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0 16px;
+        margin-bottom: 8px;
+      }
+
+      .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+        border-left: 2px solid transparent;
+        font-size: 0.875rem;
+      }
+
+      .nav-item:hover {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+      }
+
+      .nav-item.active {
+        background: var(--bg-tertiary);
+        color: var(--accent);
+        border-left-color: var(--accent);
+      }
+
+      .nav-item .nav-arrow {
+        opacity: 0;
+        font-size: 0.75rem;
+      }
+
+      .nav-item.active .nav-arrow {
+        opacity: 1;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        margin-left: var(--sidebar-width);
+        padding: 24px 32px;
+        max-width: 860px;
+      }
+
+      .content-wrapper {
+        animation: fadeIn 0.2s ease;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+          transition: transform 0.2s ease;
+          z-index: 99;
+          background: var(--bg-secondary);
+        }
+
+        .sidebar.open {
+          transform: translateX(0);
+        }
+
+        .main-content {
+          margin-left: 0;
+          padding: 20px 16px;
+        }
+      }
+
+      .menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 4px 8px;
+      }
+
+      @media (max-width: 768px) {
+        .menu-toggle {
+          display: block;
+        }
+      }
+
+      .example-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .example-card h2 {
+        color: var(--text-primary);
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .example-card .description {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin-bottom: 16px;
+      }
+
+      .demo-area {
+        background: var(--bg-tertiary);
+        border-radius: 6px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+
+      .code-block {
+        background: var(--bg-primary);
+        border-radius: 6px;
+        padding: 14px;
+        overflow-x: auto;
+        font-family: "Fira Code", "Consolas", monospace;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+      }
+
+      button {
+        background: var(--accent);
+        border: none;
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+
+      button:hover {
+        background: var(--accent-hover);
+      }
+
+      button:active {
+        background: var(--accent);
+      }
+
+      input[type="text"], input[type="color"] {
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 8px 12px;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+        outline: none;
+        transition: border-color 0.15s;
+      }
+
+      input[type="text"]:focus {
+        border-color: var(--accent);
+      }
+
+      input[type="range"] {
+        accent-color: var(--accent);
+      }
+
+      .badge {
+        display: inline-block;
+        background: var(--bg-tertiary);
+        color: var(--accent);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>
