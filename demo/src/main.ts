@@ -33,7 +33,7 @@ class MyElement extends HTMLElement implements CustomElementLifecycle {
 
   connectedCallback() {
     const children = div()(
-      this.#count(),
+      this.#count,
       button()[ON]("click", () => {
         this.count = this.count + 1;
       })("Click"),
