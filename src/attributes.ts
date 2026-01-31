@@ -36,9 +36,9 @@ export function attributeChangedCallback<
 
 export type Attributes<T> = Record<string, AttrChangeHandler<T>>;
 
-export interface CustomElementLifecycle {
-  connectedCallback(): void;
-  disconnectedCallback(): void;
+export interface ElementLifecycle {
+  connectedCallback?(): void;
+  disconnectedCallback?(): void;
   attributeChangedCallback(
     name: string,
     oldValue: string | null,

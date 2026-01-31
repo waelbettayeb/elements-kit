@@ -4,7 +4,7 @@ import { REF, ON } from "../../src/core";
 import {
   attributeChangedCallback,
   Attributes,
-  CustomElementLifecycle,
+  ElementLifecycle,
   observedAttributes,
 } from "../../src/attributes";
 
@@ -12,7 +12,7 @@ const value = signal(0);
 const doubleValue = computed(() => value() * 2);
 const doubledMessage = computed(() => `The double value is: ${doubleValue()}`);
 
-class MyElement extends HTMLElement implements CustomElementLifecycle {
+class MyElement extends HTMLElement implements ElementLifecycle {
   #connected = signal(false);
 
   // #region Attributes
