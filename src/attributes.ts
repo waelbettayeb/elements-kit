@@ -46,3 +46,45 @@ export interface CustomElementLifecycle {
   ): void;
   adoptedCallback?(): void; // This one is rarely used, so optional
 }
+
+/**
+ * Returns a deduplicated array of all observed attribute names for a custom element class and its ancestors.
+ *
+ * Call after defining static `attributes`, and assign to static `observedAttributes`.
+ *
+ * Example:
+ * ```ts
+ * class MyElement extends HTMLElement {
+ *   static attributes: Attributes<MyElement> = {
+ *     count(value) {
+ *       this.#count = Number(value);
+ *     },
+ *   };
+ *   static observedAttributes: string[] = observedAttributes(MyElement);
+ * }
+ *
+ * class ChildElement extends MyElement {
+ *   static attributes: Attributes<ChildElement> = {
+ *     bar(value) {
+ *       // ...
+ *     },
+ *   };
+ *   static observedAttributes: string[] = observedAttributes(ChildElement);
+ * }
+ * // ChildElement.observedAttributes will include both 'count' and 'bar', deduplicated.
+ * ```
+ *
+ * @param cls The custom element class constructor
+ * @returns Array of unique attribute names to observe
+ */
+export function observedAttributes(cls) {
+  const s = new Set<string>(Object.keys(cls.attributes || {}));
+  let _cls = Object.getPrototypeOf(cls);
+  while (_cls) {
+    if (_cls.observedAttributes) {
+      _cls.observedAttributes.forEach((attr: string) => s.add(attr));
+    }
+    _cls = Object.getPrototypeOf(_cls);
+  }
+  return Array.from(s);
+}

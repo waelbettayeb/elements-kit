@@ -5,6 +5,7 @@ import {
   attributeChangedCallback,
   Attributes,
   CustomElementLifecycle,
+  observedAttributes,
 } from "../../src/attributes";
 
 const value = signal(0);
@@ -20,7 +21,7 @@ class MyElement extends HTMLElement implements CustomElementLifecycle {
       this.count = Number(value);
     },
   };
-  static observedAttributes: string[] = Object.keys(MyElement.attributes);
+  static observedAttributes: string[] = observedAttributes(MyElement);
   attributeChangedCallback = attributeChangedCallback.bind(this);
   // #endregion
 
