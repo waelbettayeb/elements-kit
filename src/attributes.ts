@@ -7,11 +7,13 @@ export interface AttrChangeHandler<T> {
  * @example
  * ```ts
  * class MyElement extends HTMLElement {
- *   static attributes = {
- *     count(this: MyElement, value: string | null, oldValue?: string | null) {
+ *   static attributes: Attributes<MyElement> = {
+ *     count(value) {
  *       this.#count = Number(value);
  *     },
  *   };
+ *   static observedAttributes: string[] = Object.keys(MyElement.attributes);
+ *   attributeChangedCallback = attributeChangedCallback.bind(this);
  * }
  * ```
  */
@@ -21,10 +23,10 @@ export function attributeChangedCallback<
       attributes: Record<string, AttrChangeHandler<T>>;
     };
   },
->(this: T, name: string, value: string | null, oldValue?: string | null) {
+>(this: T, name: string, oldValue: string | null, newValue: string | null) {
   const cls = this.constructor;
   if (name in cls.attributes) {
-    cls.attributes[name].call(this, value, oldValue);
+    cls.attributes[name].call(this, newValue, oldValue);
     return true;
   }
 }
