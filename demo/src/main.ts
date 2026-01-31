@@ -7,6 +7,7 @@ import {
   ElementLifecycle,
   observedAttributes,
 } from "../../src/attributes";
+import { Slot } from "../../src/slot";
 
 const value = signal(0);
 const doubleValue = computed(() => value() * 2);
@@ -15,6 +16,7 @@ const doubledMessage = computed(() => `The double value is: ${doubleValue()}`);
 class MyElement extends HTMLElement implements ElementLifecycle {
   #connected = signal(false);
 
+  readonly child = new Slot();
   // {{{ Attributes
   static attributes: Attributes<MyElement> = {
     count(value) {
@@ -36,6 +38,7 @@ class MyElement extends HTMLElement implements ElementLifecycle {
   connectedCallback() {
     const children = div()(
       this.#count,
+      this.child.slot(),
       button()[ON]("click", () => {
         this.count = this.count + 1;
       })("Click"),

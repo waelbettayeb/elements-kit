@@ -1,4 +1,5 @@
 import { effect, isReactiveValue } from "./signals";
+import { Slot } from "./slot";
 
 export const DISPOSABLES: unique symbol = Symbol("disposables");
 export const DISPOSE: unique symbol = Symbol("dispose");
@@ -49,25 +50,13 @@ class ElementBuilder<T extends Element = Element> {
 
     children.forEach((child) => {
       if (isReactiveValue(child)) {
-        const markerStart = document.createComment("{");
-        const markerEnd = document.createComment("}");
-        const value = toNode(child());
-        console.log("ADDING REACTIVE CHILD", value);
-        el.appendChild(markerStart);
-        el.appendChild(value);
-        el.appendChild(markerEnd);
+        const slot = new Slot();
+        el.appendChild(slot.slot());
 
-        this[EFFECT](() => {
+        return this[EFFECT](() => {
           const value = toNode(child());
-          let node = markerStart.nextSibling;
-          while (node && node !== markerEnd) {
-            el.removeChild(node);
-            node = node.nextSibling;
-          }
-          markerStart.after(value);
+          slot.set(value);
         });
-
-        return;
       }
       el.appendChild(toNode(child));
     });
