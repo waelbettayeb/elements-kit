@@ -2,7 +2,7 @@ import { computed, signal } from "../../src/signals";
 import { span, div, button } from "../../src/dom";
 import { REF, ON } from "../../src/core";
 import {
-  attributeChangedCallback,
+  attrChange,
   Attributes,
   ElementLifecycle,
   observedAttributes,
@@ -26,7 +26,13 @@ class MyElement extends HTMLElement implements ElementLifecycle {
     },
   };
   static observedAttributes: string[] = observedAttributes(MyElement);
-  attributeChangedCallback = attributeChangedCallback.bind(this);
+  attributeChangedCallback(
+    name: string,
+    oldValue: string | null,
+    value: string | null,
+  ) {
+    attrChange.call(this, name, value);
+  }
   // }}}
 
   /// {{{ Count
