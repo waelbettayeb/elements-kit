@@ -26,7 +26,7 @@ export function attrChange<
       attributes: Record<string, AttrChangeHandler<T>>;
     };
   },
->(this: T, name: string, newValue: string | null, oldValue?: string | null) {
+>(this: T, name: string, oldValue: string | null, newValue: string | null) {
   let cls: any = this.constructor;
   while (cls) {
     if (cls.attributes && name in cls.attributes) {

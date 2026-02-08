@@ -31,7 +31,7 @@ class MyElement extends HTMLElement implements ElementLifecycle {
     oldValue: string | null,
     value: string | null,
   ) {
-    attrChange.call(this, name, value);
+    attrChange.call(this, name, oldValue, value);
   }
   // }}}
 
