@@ -8,6 +8,7 @@ import {
   observedAttributes,
 } from "../../src/attributes";
 import { Slot } from "../../src/slot";
+import { reactive } from "../../src/reactive";
 
 const value = signal(0);
 const doubleValue = computed(() => value() * 2);
@@ -17,6 +18,7 @@ class MyElement extends HTMLElement implements ElementLifecycle {
   #connected = signal(false);
 
   readonly child = new Slot();
+
   // {{{ Attributes
   static attributes: Attributes<MyElement> = {
     count(value) {
@@ -27,17 +29,14 @@ class MyElement extends HTMLElement implements ElementLifecycle {
   attributeChangedCallback = attributeChangedCallback.bind(this);
   // }}}
 
-  #count = signal(0);
-  set count(v: number) {
-    this.#count(v);
-  }
-  get count() {
-    return this.#count();
-  }
+  /// {{{ Count
+  @reactive()
+  count: number = 0;
+  // }}}
 
   connectedCallback() {
     const children = div()(
-      this.#count,
+      computed(() => this.count),
       this.child.slot(),
       button()[ON]("click", () => {
         this.count = this.count + 1;
